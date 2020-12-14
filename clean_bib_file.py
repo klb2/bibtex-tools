@@ -88,7 +88,8 @@ def replace_bib_id(entry):
         last_name = first_author.split(" ")[-1]
     last_name = _strip_curly_brackets(last_name)
     last_name = last_name.replace(" ", "")
-    first_word = re.findall(r"[\w']+", title)[0]
+    #first_word = re.findall(r"[\w']+", title)[0]  # this gives "a" as first word
+    first_word = re.findall(r"[\w']{3,}", title)[0]
     new_id = "{}{}{}".format(last_name, year, first_word.lower())
     return new_id
 
@@ -146,9 +147,13 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("bib_file")
-    parser.add_argument("-r", "--remove_fields", nargs="*", default=["abstract", "annote", "file", "keyword"])
-    parser.add_argument("--replace_ids", action="store_true")
-    parser.add_argument("--arxiv", action="store_true")
+    parser.add_argument("-r", "--remove_fields", nargs="*",
+                        default=["abstract", "annote", "file", "keyword"],
+                        help="Name of fields that should be removed for the clean bib file. By default, this is 'abstract', 'annote', 'file', 'keyword'. Leave empty to not delete any fields")
+    parser.add_argument("--replace_ids", action="store_true",
+                        help="If this is set, the IDs of the bib entries are replaced by a fixed scheme")
+    parser.add_argument("--arxiv", action="store_true",
+                        help="If this is set, the primaryClasses are downloaded for arXiv preprints. Requires a eprint field in the entry")
     args = vars(parser.parse_args())
     if args['arxiv']:
         import feedparser
