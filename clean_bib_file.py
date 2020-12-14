@@ -1,3 +1,5 @@
+import re
+
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
@@ -59,6 +61,11 @@ def clean_pages(pages):
 CLEAN_FUNC = {KEY_PAGES: clean_pages,
               KEY_MONTH: clean_month}
 
+def _strip_curly_brackets(string):
+    string = string.strip("{")
+    string = string.strip("}")
+    return string
+
 def replace_bib_id(entry):
     author = entry.get(KEY_AUTHOR)
     year = entry.get(KEY_YEAR)
@@ -66,13 +73,21 @@ def replace_bib_id(entry):
     if (author is None) or (year is None) or (title is None):
         return entry.get(KEY_ID)
     first_author = author.split(" and ")[0]
-    print(first_author)
+    if "," in first_author:
+        last_name = first_author.split(",")[0]
+    else:
+        last_name = first_author.split(" ")[-1]
+    last_name = _strip_curly_brackets(last_name)
+    last_name = last_name.replace(" ", "")
+    first_word = re.findall(r"[\w']+", title)[0]
+    new_id = "{}{}{}".format(last_name, year, first_word.lower())
+    return new_id
 
 def main(bib_file, remove_fields=None, replace_ids=False):
     if remove_fields is None:
         remove_fields = []
     with open(bib_file) as _bib_file:
-        parser = BibTexParser(homogenize_fields=True)
+        parser = BibTexParser(homogenize_fields=True, common_strings=True)
         bib_database = bibtexparser.load(_bib_file, parser=parser)
     _clean_entries = []
     for entry in bib_database.get_entry_list():
@@ -83,8 +98,7 @@ def main(bib_file, remove_fields=None, replace_ids=False):
         for _field in remove_fields:
             entry.pop(_field, None)
         if replace_ids:
-            replace_bib_id(entry)
-            #entry[KEY_ID] = replace_bib_id(entry)
+            entry[KEY_ID] = replace_bib_id(entry)
         _clean_entries.append(entry)
     clean_database = BibDatabase()
     clean_database.entries = _clean_entries
