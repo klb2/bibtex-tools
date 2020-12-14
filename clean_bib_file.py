@@ -61,8 +61,13 @@ def clean_pages(pages):
         _split.remove("") # remove empty entries in case '--' was already used
     return "--".join(_split)
 
+def clean_eprint(eprint):
+    return eprint.strip("arXiv:")
+
+
 CLEAN_FUNC = {KEY_PAGES: clean_pages,
-              KEY_MONTH: clean_month}
+              KEY_MONTH: clean_month,
+              KEY_EPRINT: clean_eprint}
 
 
 def _strip_curly_brackets(string):
@@ -116,7 +121,8 @@ def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False):
                 entry[_key] = _clean_func(_value)
         if arxiv:
             eprint = entry.get(KEY_EPRINT)
-            if eprint is not None:
+            primary_class = entry.get(KEY_CATEGORY)
+            if (eprint is not None) and (primary_class is None):
                 _primary_class = get_arxiv_category(eprint)
                 if _primary_class is not None:
                     entry[KEY_ARCHIVE] = "arXiv"
