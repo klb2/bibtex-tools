@@ -4,8 +4,9 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 
 KEY_MONTH = "month"
+KEY_PAGES = "pages"
 
-def substitute_month(month):
+def clean_month(month):
     month_str = str(month).lower()
     MONTH_DICT = {"jan": "1",
                   "january": "1",
@@ -45,7 +46,16 @@ def substitute_month(month):
                  }
     return MONTH_DICT.get(month_str, month_str)
 
-def main(bib_file, remove_fields=None):
+def clean_pages(pages):
+    _split = pages.split("-")
+    if "" in _split:
+        _split.remove("") # remove empty entries in case '--' was already used
+    return "--".join(_split)
+
+CLEAN_FUNC = {KEY_PAGES: clean_pages,
+              KEY_MONTH: clean_month}
+
+def main(bib_file, remove_fields=None, replace_keys=False):
     if remove_fields is None:
         remove_fields = []
     with open(bib_file) as _bib_file:
@@ -53,9 +63,10 @@ def main(bib_file, remove_fields=None):
         bib_database = bibtexparser.load(_bib_file, parser=parser)
     _clean_entries = []
     for entry in bib_database.get_entry_list():
-        month = entry.get(KEY_MONTH)
-        if month is not None:
-            entry[KEY_MONTH] = substitute_month(month)
+        for _key, _clean_func in CLEAN_FUNC.items():
+            _value = entry.get(_key)
+            if _value is not None:
+                entry[_key] = _clean_func(_value)
         for _field in remove_fields:
             entry.pop(_field, None)
         _clean_entries.append(entry)
@@ -74,5 +85,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("bib_file")
     parser.add_argument("-r", "--remove_fields", nargs="*", default=["abstract", "annote", "file", "keyword"])
+    parser.add_argument("--replace_keys", action="store_true")
     args = vars(parser.parse_args())
     main(**args)
