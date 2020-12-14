@@ -11,6 +11,9 @@ KEY_MONTH = "month"
 KEY_TITLE = "title"
 KEY_PAGES = "pages"
 KEY_YEAR = "year"
+KEY_EPRINT = "eprint"
+KEY_ARCHIVE = "archivePrefix"
+KEY_CATEGORY = "primaryClass"
 
 def clean_month(month):
     month_str = str(month).lower()
@@ -61,6 +64,7 @@ def clean_pages(pages):
 CLEAN_FUNC = {KEY_PAGES: clean_pages,
               KEY_MONTH: clean_month}
 
+
 def _strip_curly_brackets(string):
     string = string.strip("{")
     string = string.strip("}")
@@ -83,7 +87,22 @@ def replace_bib_id(entry):
     new_id = "{}{}{}".format(last_name, year, first_word.lower())
     return new_id
 
-def main(bib_file, remove_fields=None, replace_ids=False):
+def get_arxiv_category(eprint):
+    base_url = 'http://export.arxiv.org/api/query?'
+    search_query = {'id_list': eprint,}
+    query = "&".join(["{}={}".format(k, v) for k, v in search_query.items()])
+    feed = feedparser.parse(base_url + query)
+    entries = feed['entries']
+    if len(entries) != 1:
+        return None
+    #a_id = entries[0]["id"].split('/abs/')[-1]
+    primary_class = entries[0]['arxiv_primary_category']['term']
+    if primary_class == "":
+        return None
+    else:
+        return primary_class
+
+def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False):
     if remove_fields is None:
         remove_fields = []
     with open(bib_file) as _bib_file:
@@ -95,6 +114,13 @@ def main(bib_file, remove_fields=None, replace_ids=False):
             _value = entry.get(_key)
             if _value is not None:
                 entry[_key] = _clean_func(_value)
+        if arxiv:
+            eprint = entry.get(KEY_EPRINT)
+            if eprint is not None:
+                _primary_class = get_arxiv_category(eprint)
+                if _primary_class is not None:
+                    entry[KEY_ARCHIVE] = "arXiv"
+                    entry[KEY_CATEGORY] = _primary_class
         for _field in remove_fields:
             entry.pop(_field, None)
         if replace_ids:
@@ -116,5 +142,8 @@ if __name__ == "__main__":
     parser.add_argument("bib_file")
     parser.add_argument("-r", "--remove_fields", nargs="*", default=["abstract", "annote", "file", "keyword"])
     parser.add_argument("--replace_ids", action="store_true")
+    parser.add_argument("--arxiv", action="store_true")
     args = vars(parser.parse_args())
+    if args['arxiv']:
+        import feedparser
     main(**args)
