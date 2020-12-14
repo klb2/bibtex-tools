@@ -19,7 +19,31 @@ def substitute_month(month):
                   "apr": "4",
                   "april": "4",
                   "4": "4",
-    return MONTH_DICTget(month_str, month_str)
+                  "may": "5",
+                  "5": "5",
+                  "jun": "6",
+                  "june": "6",
+                  "6": "6",
+                  "jul": "7",
+                  "july": "7",
+                  "7": "7",
+                  "aug": "8",
+                  "august": "8",
+                  "8": "8",
+                  "sep": "9",
+                  "september": "9",
+                  "9": "9",
+                  "oct": "10",
+                  "october": "10",
+                  "10": "10",
+                  "nov": "11",
+                  "november": "11",
+                  "11": "11",
+                  "dec": "12",
+                  "december": "12",
+                  "12": "12",
+                 }
+    return MONTH_DICT.get(month_str, month_str)
 
 def main(bib_file, remove_fields=None):
     if remove_fields is None:
