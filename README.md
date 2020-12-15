@@ -14,7 +14,7 @@ Right now, the following functions are available
 ## TODOs
 The following features are planned
 * Automatically use curly brackets for acronyms (regular expressions, e.g.,
-  `re.findall(r"[A-Z]{2,}", title)`)
+  `re.sub(r'[A-Z]{2,}', r'{\g<0>}', title)`)
 * Deal with multiple URLs that are separated by space, e.g., when exporting
   from Mendeley
 * Maybe there is an issue when both URL and DOI are provided. Maybe delete URL,
