@@ -13,9 +13,13 @@ Right now, the following functions are available
 
 ## TODOs
 The following features are planned
-* Automatically use curly brackets for acronyms
+* Automatically use curly brackets for acronyms (regular expressions, e.g.,
+  `re.findall(r"[A-Z]{2,}", title)`)
 * Deal with multiple URLs that are separated by space, e.g., when exporting
   from Mendeley
+* Maybe there is an issue when both URL and DOI are provided. Maybe delete URL,
+  if DOI is specified
 * Test unicode support
-* Check for duplicates
+* Check for duplicates, i.e., the same ID used multiple times. Maybe
+  `bibtexparser` does this already?!
 * Add setup and entry points for script and upload it to PyPI
