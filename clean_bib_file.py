@@ -1,3 +1,4 @@
+import os.path
 import logging
 import re
 
@@ -109,7 +110,8 @@ def get_arxiv_category(eprint):
     else:
         return primary_class
 
-def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False, verbose=logging.WARN):
+def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False,
+         verbose=logging.WARN, output=None):
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s",
                         encoding='utf-8')
     logger = logging.getLogger('clean_bib_file')
@@ -152,9 +154,11 @@ def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False, verbose=l
         _clean_entries.append(entry)
     clean_database = BibDatabase()
     clean_database.entries = _clean_entries
-    outfile = "clean-{}".format(bib_file)
-    logger.info("Saving cleaned entries to: %s", outfile)
-    with open(outfile, 'w') as out_file:
+    if output is None:
+        _out_dir, _out_base = os.path.split(bib_file)
+        output = os.path.join(_out_dir, "clean-{}".format(_out_base))
+    logger.info("Saving cleaned entries to: %s", output)
+    with open(output, 'w') as out_file:
         writer = BibTexWriter()
         writer.add_trailing_comma = True
         writer.indent = "\t"  # "  "
@@ -173,6 +177,7 @@ if __name__ == "__main__":
                         help="If this is set, the IDs of the bib entries are replaced by a fixed scheme")
     parser.add_argument("--arxiv", action="store_true",
                         help="If this is set, the primaryClasses are downloaded for arXiv preprints. Requires a eprint field in the entry")
+    parser.add_argument("-o", "--output", help="Output file for the clean bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
     parser.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
     args = vars(parser.parse_args())
     args['verbose'] = max([logging.WARN - 10*args['verbose'], logging.DEBUG])
