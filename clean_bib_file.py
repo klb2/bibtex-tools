@@ -1,3 +1,4 @@
+import logging
 import re
 
 import bibtexparser
@@ -108,39 +109,57 @@ def get_arxiv_category(eprint):
     else:
         return primary_class
 
-def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False):
+def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False, verbose=logging.WARN):
+    logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s",
+                        encoding='utf-8')
+    logger = logging.getLogger('clean_bib_file')
+    logger.setLevel(verbose)
+    logger.info("Cleaning bib file: %s", bib_file)
+
     if remove_fields is None:
         remove_fields = []
+    logger.info("Fields to remove: {}".format(remove_fields))
+
     with open(bib_file) as _bib_file:
         parser = BibTexParser(homogenize_fields=True, common_strings=True)
         bib_database = bibtexparser.load(_bib_file, parser=parser)
+    logger.debug("Successfully loaded bib file")
+
     _clean_entries = []
     for entry in bib_database.get_entry_list():
+        logger.info("Working on entry: %s", entry.get(KEY_ID))
         for _key, _clean_func in CLEAN_FUNC.items():
             _value = entry.get(_key)
             if _value is not None:
+                logger.debug("Cleaning field: %s", _key)
                 entry[_key] = _clean_func(_value)
         if arxiv:
             eprint = entry.get(KEY_EPRINT)
             primary_class = entry.get(KEY_CATEGORY)
             if (eprint is not None) and (primary_class is None):
+                logging.debug("Retrieving arXiv primary category")
                 _primary_class = get_arxiv_category(eprint)
                 if _primary_class is not None:
                     entry[KEY_ARCHIVE] = "arXiv"
                     entry[KEY_CATEGORY] = _primary_class
+                    logging.debug("Primary category successfully changed to: %s", _primary_class)
         for _field in remove_fields:
+            logger.debug("Removing field: %s", _field)
             entry.pop(_field, None)
         if replace_ids:
+            logger.debug("Replacing bib ID")
             entry[KEY_ID] = replace_bib_id(entry)
         _clean_entries.append(entry)
     clean_database = BibDatabase()
     clean_database.entries = _clean_entries
     outfile = "clean-{}".format(bib_file)
+    logger.info("Saving cleaned entries to: %s", outfile)
     with open(outfile, 'w') as out_file:
         writer = BibTexWriter()
         writer.add_trailing_comma = True
         writer.indent = "\t"  # "  "
         out_file.write(writer.write(clean_database))
+    logger.info("Successfully saved new file.")
 
 
 if __name__ == "__main__":
@@ -154,7 +173,9 @@ if __name__ == "__main__":
                         help="If this is set, the IDs of the bib entries are replaced by a fixed scheme")
     parser.add_argument("--arxiv", action="store_true",
                         help="If this is set, the primaryClasses are downloaded for arXiv preprints. Requires a eprint field in the entry")
+    parser.add_argument("-v", "--verbose", action="count", default=0)
     args = vars(parser.parse_args())
+    args['verbose'] = logging.WARN - 10*args['verbose']
     if args['arxiv']:
         import feedparser
     main(**args)
