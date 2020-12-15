@@ -14,8 +14,8 @@ KEY_TITLE = "title"
 KEY_PAGES = "pages"
 KEY_YEAR = "year"
 KEY_EPRINT = "eprint"
-KEY_ARCHIVE = "archivePrefix"
-KEY_CATEGORY = "primaryClass"
+KEY_ARCHIVE = "archiveprefix"
+KEY_CATEGORY = "primaryclass"
 
 def clean_month(month):
     month_str = str(month).lower()
@@ -104,7 +104,10 @@ def get_arxiv_category(eprint):
     if len(entries) != 1:
         return None
     #a_id = entries[0]["id"].split('/abs/')[-1]
-    primary_class = entries[0]['arxiv_primary_category']['term']
+    try:
+        primary_class = entries[0]['arxiv_primary_category']['term']
+    except KeyError:
+        return None
     if primary_class == "":
         return None
     else:
