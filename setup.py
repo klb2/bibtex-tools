@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
-from digcommpy import __version__, __author__, __email__
+from bibtextools import __version__, __author__, __email__
 
 with open("README.md") as rm:
     long_desc = rm.read()
 
-with open("requirements.txt") as req:
-    requirements = req.read().splitlines()
+#with open("requirements.txt") as req:
+#    requirements = req.read().splitlines()
 
 setup(
     name = "bibtextools",
@@ -25,6 +25,8 @@ setup(
         },
     packages=find_packages(),
     tests_require=['pytest', 'tox'],
-    install_requires=requirements,
+    install_requires=['bibtexparser',
+                      'feedparser'
+                     ],
     entry_points={"console_scripts": ["bibtex-tools=bibtextools.__main__:main"]},
 )
