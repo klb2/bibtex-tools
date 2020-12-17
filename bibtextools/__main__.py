@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 from .clean_bib_file import clean_bib_main
 
