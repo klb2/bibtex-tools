@@ -115,8 +115,7 @@ def get_arxiv_category(eprint):
 
 def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False,
          verbose=logging.WARN, output=None):
-    logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s",
-                        encoding='utf-8')
+    logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('clean_bib_file')
     logger.setLevel(verbose)
     logger.info("Cleaning bib file: %s", bib_file)
