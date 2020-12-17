@@ -1,0 +1,15 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [0.1.0] - 2020-12-17
+### Added
+- Script to clean bib files with the following features
+- Page field is cleaned (en-dash `--` is used to separate numbers)
+- Month field is cleaned (numbers are used instead of the old `jan` format)
+- Eprint field is cleaned ("arXiv:" is stripped)
+- Title field is cleaned (acronyms are shielded with curly brackets)
+- Support for adding `primaryClass` field for arXiv articles
+- Entry-IDs can be replaced with the scheme `<Author><year><firstWordOfTitle>`
