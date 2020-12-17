@@ -76,10 +76,8 @@ CLEAN_FUNC = {KEY_PAGES: clean_pages,
               KEY_TITLE: clean_title}
 
 
-def _strip_curly_brackets(string):
-    string = string.strip("{")
-    string = string.strip("}")
-    return string
+def _remove_unwanted_characters(string):
+    return re.sub(r'[{}]|(\\.)', '', string)
 
 def replace_bib_id(entry):
     author = entry.get(KEY_AUTHOR)
@@ -92,7 +90,7 @@ def replace_bib_id(entry):
         last_name = first_author.split(",")[0]
     else:
         last_name = first_author.split(" ")[-1]
-    last_name = _strip_curly_brackets(last_name)
+    last_name = _remove_unwanted_characters(last_name)
     last_name = last_name.replace(" ", "")
     #first_word = re.findall(r"[\w']+", title)[0]  # this gives "a" as first word
     first_word = re.findall(r"[\w']{3,}", title)[0]
