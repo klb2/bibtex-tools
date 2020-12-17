@@ -1,5 +1,3 @@
-#image: python:3.6
-#image: python:3
 image: fkrull/multi-python:bionic
 
 # Change pip's cache directory to be inside the project directory since we can
@@ -18,23 +16,20 @@ cache:
     - venv/
 
 before_script:
-  - python3 -V               # Print out python version for debugging
+  - python3 -V # Print out python version for debugging
   - pip3 install virtualenv
-#  - virtualenv venv
-#  - source venv/bin/activate
-#  - pip install setuptools==39
+  - pip3 install -r requirements.txt
 
 test:
   script:
-  - pip3 install -r requirements.txt
   - pip3 install .
   - pip3 install tox flake8 pytest pytest-html
   - tox
 
 build:
   script:
-    - pip install setuptools wheel
-    - python setup.py sdist bdist_wheel
+    - pip3 install setuptools wheel
+    - python3 setup.py sdist bdist_wheel
   artifacts:
     paths:
     - dist/*.whl
