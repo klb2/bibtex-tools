@@ -21,8 +21,6 @@ def get_args():
 def parse_args(parser):
     args = vars(parser.parse_args())
     args['verbose'] = max([logging.WARN - 10*args['verbose'], logging.DEBUG])
-    if args['arxiv']:
-        import feedparser
     clean_bib_main(**args)
 
 def main():

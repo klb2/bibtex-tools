@@ -2,6 +2,7 @@ import os.path
 import logging
 import re
 
+import feedparser
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
