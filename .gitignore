@@ -13,6 +13,7 @@ __pycache__
 .cache
 bin/
 obj/
+.tox
 
 # Packages #
 ############
