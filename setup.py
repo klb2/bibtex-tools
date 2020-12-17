@@ -14,7 +14,9 @@ setup(
     author = __author__,
     author_email = __email__,
     description = "Tools for working with BibTeX files",
+    long_description_content_type="text/markdown",
     long_description=long_desc,
+    keywords="bibtex latex biber bibliography",
     license='GPLv3',
     url='https://gitlab.com/klb2/bibtex-tools',
     project_urls={
@@ -24,4 +26,5 @@ setup(
     packages=find_packages(),
     tests_require=['pytest', 'tox'],
     install_requires=requirements,
+    entry_points={"console_scripts": ["bibtex-tools=bibtextools.__main__:main"]},
 )

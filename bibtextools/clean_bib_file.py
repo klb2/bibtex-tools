@@ -116,8 +116,8 @@ def get_arxiv_category(eprint):
     else:
         return primary_class
 
-def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False,
-         verbose=logging.WARN, output=None):
+def clean_bib_main(bib_file, remove_fields=None, replace_ids=False,
+                   arxiv=False, verbose=logging.WARN, output=None):
     encoding = 'utf-8'
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('clean_bib_file')
@@ -170,23 +170,3 @@ def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False,
         writer.indent = "\t"  # "  "
         out_file.write(writer.write(clean_database))
     logger.info("Successfully saved new file.")
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("bib_file")
-    parser.add_argument("-r", "--remove_fields", nargs="*",
-                        default=["abstract", "annote", "file", "keyword"],
-                        help="Name of fields that should be removed for the clean bib file. By default, this is 'abstract', 'annote', 'file', 'keyword'. Leave empty to not delete any fields")
-    parser.add_argument("--replace_ids", action="store_true",
-                        help="If this is set, the IDs of the bib entries are replaced by a fixed scheme")
-    parser.add_argument("--arxiv", action="store_true",
-                        help="If this is set, the primaryClasses are downloaded for arXiv preprints. Requires a eprint field in the entry")
-    parser.add_argument("-o", "--output", help="Output file for the clean bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
-    parser.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
-    args = vars(parser.parse_args())
-    args['verbose'] = max([logging.WARN - 10*args['verbose'], logging.DEBUG])
-    if args['arxiv']:
-        import feedparser
-    main(**args)
