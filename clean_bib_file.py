@@ -115,6 +115,7 @@ def get_arxiv_category(eprint):
 
 def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False,
          verbose=logging.WARN, output=None):
+    encoding = 'utf-8'
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('clean_bib_file')
     logger.setLevel(verbose)
@@ -124,7 +125,7 @@ def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False,
         remove_fields = []
     logger.info("Fields to remove: {}".format(remove_fields))
 
-    with open(bib_file) as _bib_file:
+    with open(bib_file, encoding=encoding) as _bib_file:
         parser = BibTexParser(homogenize_fields=True, common_strings=True)
         bib_database = bibtexparser.load(_bib_file, parser=parser)
     logger.debug("Successfully loaded bib file")
@@ -160,7 +161,7 @@ def main(bib_file, remove_fields=None, replace_ids=False, arxiv=False,
         _out_dir, _out_base = os.path.split(bib_file)
         output = os.path.join(_out_dir, "clean-{}".format(_out_base))
     logger.info("Saving cleaned entries to: %s", output)
-    with open(output, 'w') as out_file:
+    with open(output, 'w', encoding=encoding) as out_file:
         writer = BibTexWriter()
         writer.add_trailing_comma = True
         writer.indent = "\t"  # "  "
