@@ -32,3 +32,12 @@ def test_replace_id(tmpdir, bib_file=BIB_MAIN):
     cleaned_keys = set([k[clean_bib_file.KEY_ID]
                         for k in clean_bib_database.get_entry_list()])
     assert cleaned_keys == expected_keys
+
+def test_arxiv_primaryclass(tmpdir, bib_file=BIB_MAIN):
+    out_file = os.path.join(tmpdir, CLEAN_BIB_MAIN)
+    clean_bib_file.clean_bib_main(bib_file, output=out_file, arxiv=True)
+    with open(out_file, encoding="utf-8") as _bib_file:
+        parser = BibTexParser(homogenize_fields=True, common_strings=True)
+        clean_bib_database = bibtexparser.load(_bib_file, parser=parser)
+    clean_entries = clean_bib_database.get_entry_dict()
+    assert clean_entries["Besser2020CLpart1"][clean_bib_file.KEY_CATEGORY] == "cs.IT"
