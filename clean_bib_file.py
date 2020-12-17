@@ -66,10 +66,13 @@ def clean_pages(pages):
 def clean_eprint(eprint):
     return eprint.strip("arXiv:")
 
+def clean_title(title):
+    return re.sub(r'([A-Z]{1,}\b)|([a-zA-Z]+[A-Z]+[a-zA-Z\b]*)', r'{\g<0>}', title)
 
 CLEAN_FUNC = {KEY_PAGES: clean_pages,
               KEY_MONTH: clean_month,
-              KEY_EPRINT: clean_eprint}
+              KEY_EPRINT: clean_eprint,
+              KEY_TITLE: clean_title}
 
 
 def _strip_curly_brackets(string):
