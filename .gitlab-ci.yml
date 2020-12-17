@@ -18,17 +18,17 @@ cache:
     - venv/
 
 before_script:
-  - python -V               # Print out python version for debugging
-  - pip install virtualenv
+  - python3 -V               # Print out python version for debugging
+  - pip3 install virtualenv
 #  - virtualenv venv
 #  - source venv/bin/activate
 #  - pip install setuptools==39
 
 test:
   script:
-  - pip install -r requirements.txt
-  - pip install .
-  - pip install tox flake8 pytest pytest-html
+  - pip3 install -r requirements.txt
+  - pip3 install .
+  - pip3 install tox flake8 pytest pytest-html
   - tox
 
 build:
