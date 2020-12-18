@@ -152,7 +152,7 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
         _clean_entries = replace_duplicates(_clean_entries)
     if output is None:
         _out_dir, _out_base = os.path.split(bib_file)
-        output = os.path.join(_out_dir, "clean-{}".format(_out_base))
+        output = os.path.join(_out_dir, "modern-{}".format(_out_base))
     logger.info("Saving %d cleaned entries to: %s", len(_clean_entries), output)
     write_bib_database(_clean_entries, output, encoding=encoding)
     logger.info("Successfully saved new file.")
