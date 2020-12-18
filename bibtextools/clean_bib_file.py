@@ -42,16 +42,16 @@ def replace_duplicates(entries, return_dupl=False):
         return entries
 
 @cleaning_function
-def remove_fields(entries, fields_to_remove=None):
-    if fields_to_remove is None:
+def remove_fields_from_entries(entries, remove_fields=None):
+    if remove_fields is None:
         return entries
     for entry in entries:
-        for _field in fields_to_remove:
+        for _field in remove_fields:
             entry.pop(_field, None)
     return entries
 
-def clean_bib_file_main(bib_file, abbr_file=None, encoding="utf-8",
-                        verbose=logging.WARN, output=None):
+def clean_bib_file_main(bib_file, abbr_file=None, remove_fields=None,
+                        encoding="utf-8", verbose=logging.WARN, output=None):
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('clean_bib_file')
     logger.setLevel(verbose)
@@ -64,3 +64,12 @@ def clean_bib_file_main(bib_file, abbr_file=None, encoding="utf-8",
                                                    return_dupl=True)
     logger.info("Replaced %d duplicates", len(duplicates))
     logger.debug("The following duplicates were found: %s", duplicates)
+    if remove_fields is not None:
+        logger.info("Removing fields: %s", remove_fields)
+        clean_entries = remove_fields_from_entries(clean_entries, remove_fields)
+    if output is None:
+        _out_dir, _out_base = os.path.split(bib_file)
+        output = os.path.join(_out_dir, "clean-{}".format(_out_base))
+    logger.info("Saving %d cleaned entries to: %s", len(clean_entries), output)
+    write_bib_database(clean_entries, output, encoding=encoding)
+    logger.info("Successfully saved new file.")
