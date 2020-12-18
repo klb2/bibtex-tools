@@ -8,6 +8,8 @@ from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 
+from .util import load_bib_file, write_bib_database
+
 KEY_ID = "ID"
 KEY_AUTHOR = "author"
 KEY_MONTH = "month"
@@ -115,8 +117,8 @@ def get_arxiv_category(eprint):
     else:
         return primary_class
 
-def clean_bib_main(bib_file, remove_fields=None, replace_ids=False,
-                   arxiv=False, verbose=logging.WARN, output=None):
+def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
+                       arxiv=False, verbose=logging.WARN, output=None):
     encoding = 'utf-8'
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('clean_bib_file')
@@ -127,9 +129,7 @@ def clean_bib_main(bib_file, remove_fields=None, replace_ids=False,
         remove_fields = []
     logger.info("Fields to remove: {}".format(remove_fields))
 
-    with open(bib_file, encoding=encoding) as _bib_file:
-        parser = BibTexParser(homogenize_fields=True, common_strings=True)
-        bib_database = bibtexparser.load(_bib_file, parser=parser)
+    bib_database = load_bib_file(bib_file, encoding=encoding)
     logger.debug("Successfully loaded bib file")
 
     _clean_entries = []
@@ -157,15 +157,9 @@ def clean_bib_main(bib_file, remove_fields=None, replace_ids=False,
             logger.debug("Replacing bib ID")
             entry[KEY_ID] = replace_bib_id(entry)
         _clean_entries.append(entry)
-    clean_database = BibDatabase()
-    clean_database.entries = _clean_entries
     if output is None:
         _out_dir, _out_base = os.path.split(bib_file)
         output = os.path.join(_out_dir, "clean-{}".format(_out_base))
-    logger.info("Saving cleaned entries to: %s", output)
-    with open(output, 'w', encoding=encoding) as out_file:
-        writer = BibTexWriter()
-        writer.add_trailing_comma = True
-        writer.indent = "\t"  # "  "
-        out_file.write(writer.write(clean_database))
+    logger.info("Saving %d cleaned entries to: %s", len(_clean_entries), output)
+    write_bib_database(_clean_entries, output, encoding=encoding)
     logger.info("Successfully saved new file.")

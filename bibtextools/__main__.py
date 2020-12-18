@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from .clean_bib_file import clean_bib_main
+from .modernize_bib_file import modernize_bib_main
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -21,7 +21,7 @@ def get_args():
 def parse_args(parser):
     args = vars(parser.parse_args())
     args['verbose'] = max([logging.WARN - 10*args['verbose'], logging.DEBUG])
-    clean_bib_main(**args)
+    modernize_bib_main(**args)
 
 def main():
     parser = get_args()
