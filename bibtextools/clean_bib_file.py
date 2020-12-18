@@ -1,28 +1,34 @@
 import os.path
 import logging
+import copy
 
 from bibtexparser.bibdatabase import BibDatabase
 
 from .const import KEY_ID
 from .util import load_bib_file, write_bib_database
 
+def cleaning_function(func):
+    def wrapper_clean_func(bib_database, *args, **kwargs):
+        if isinstance(bib_database, BibDatabase):
+            entries = bib_database.get_entry_list()
+        else:
+            entries = bib_database
+        entries = copy.deepcopy(entries)
+        return func(entries, *args, **kwargs)
+    return wrapper_clean_func
+
+
 def has_duplicates(bib_database):
     return len(bib_database.get_entry_dict()) != len(bib_database.get_entry_list())
 
 # https://stackoverflow.com/a/9836685
-def get_duplicates(bib_database):
-    if isinstance(bib_database, BibDatabase):
-        entries = bib_database.get_entry_list()
-    else:
-        entries = bib_database
+@cleaning_function
+def get_duplicates(entries):
     list_ids = [x[KEY_ID] for x in entries]
     return set([x for x in list_ids if list_ids.count(x) > 1])
 
-def replace_duplicates(bib_database, return_dupl=False):
-    if isinstance(bib_database, BibDatabase):
-        entries = bib_database.get_entry_list()
-    else:
-        entries = bib_database
+@cleaning_function
+def replace_duplicates(entries, return_dupl=False):
     duplicates = {k: 0 for k in get_duplicates(entries)}
     for entry in entries:
         _id = entry[KEY_ID]
@@ -34,6 +40,15 @@ def replace_duplicates(bib_database, return_dupl=False):
         return entries, duplicates
     else:
         return entries
+
+@cleaning_function
+def remove_fields(entries, fields_to_remove=None):
+    if fields_to_remove is None:
+        return entries
+    for entry in entries:
+        for _field in fields_to_remove:
+            entry.pop(_field, None)
+    return entries
 
 def clean_bib_file_main(bib_file, abbr_file=None, encoding="utf-8",
                         verbose=logging.WARN, output=None):
