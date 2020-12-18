@@ -36,7 +36,7 @@ def test_replace_duplicates_return():
 def test_remove_fields():
     bib_database = load_bib_file(DIRTY)
     entries = bib_database.get_entry_list()
-    clean_entries = clean_bib_file.remove_fields(entries, ['abstract', 'annote'])
+    clean_entries = clean_bib_file.remove_fields_from_entries(entries, ['abstract', 'annote'])
     _old_entry = [k for k in entries if k['ID'] == "RemoveFields"][0]
     _clean_entry = [k for k in clean_entries if k['ID'] == "RemoveFields"][0]
     assert (("abstract" in _old_entry) and ("annote" in _old_entry) and
