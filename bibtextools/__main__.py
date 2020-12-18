@@ -4,8 +4,14 @@ import logging
 from .modernize_bib_file import modernize_bib_main
 from .clean_bib_file import clean_bib_file_main
 
-DEFAULT_REMOVE = ["abstract", "annote", "file", "keyword", "keywords", 
-                  "bdsk-url-1", "date-added", "date-modified", "timestamp"]
+DEFAULT_REMOVE = ["abstract", "annote",
+                  "bdsk-url-1",
+                  #"comments",
+                  "date-added", "date-modified", 
+                  "file",
+                  "keyword", "keywords", 
+                  "owner",
+                  "timestamp"]
 
 def get_arg_parser():
     parser = argparse.ArgumentParser(prog="bibtex-tools")
