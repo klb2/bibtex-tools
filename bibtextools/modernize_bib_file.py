@@ -5,16 +5,9 @@ import re
 import feedparser
 
 from .util import load_bib_file, write_bib_database
-
-KEY_ID = "ID"
-KEY_AUTHOR = "author"
-KEY_MONTH = "month"
-KEY_TITLE = "title"
-KEY_PAGES = "pages"
-KEY_YEAR = "year"
-KEY_EPRINT = "eprint"
-KEY_ARCHIVE = "archiveprefix"
-KEY_CATEGORY = "primaryclass"
+from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
+                    KEY_MONTH, KEY_PAGES, KEY_TITLE, KEY_YEAR)
+from .clean_bib_file import has_duplicates, replace_duplicates
 
 def clean_month(month):
     month_str = str(month).lower()
@@ -127,6 +120,8 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
 
     bib_database = load_bib_file(bib_file, encoding=encoding)
     logger.debug("Successfully loaded bib file")
+    if has_duplicates(bib_database):
+        logger.warn("The loaded bib-file has duplicates (same ID for multiple entries). Consider running this script with the --replace_ids option to get automatically rename them.")
 
     _clean_entries = []
     for entry in bib_database.get_entry_list():
@@ -153,6 +148,8 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
             logger.debug("Replacing bib ID")
             entry[KEY_ID] = replace_bib_id(entry)
         _clean_entries.append(entry)
+    if replace_ids:
+        _clean_entries = replace_duplicates(_clean_entries)
     if output is None:
         _out_dir, _out_base = os.path.split(bib_file)
         output = os.path.join(_out_dir, "clean-{}".format(_out_base))
