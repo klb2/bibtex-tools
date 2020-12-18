@@ -3,10 +3,6 @@ import logging
 import re
 
 import feedparser
-import bibtexparser
-from bibtexparser.bparser import BibTexParser
-from bibtexparser.bwriter import BibTexWriter
-from bibtexparser.bibdatabase import BibDatabase
 
 from .util import load_bib_file, write_bib_database
 
