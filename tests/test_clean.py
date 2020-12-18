@@ -26,3 +26,9 @@ def test_replace_duplicates():
     clean_ids = set([x[KEY_ID] for x in clean_entries])
     assert clean_ids == {"Author2020:a","Author2020:b","Author2020:c",
                          "KEY:a","KEY:b"}
+
+def test_replace_duplicates_return():
+    bib_database = load_bib_file(DIRTY)
+    entries = bib_database.get_entry_list()
+    clean_entries, duplicates = clean_bib_file.replace_duplicates(entries, return_dupl=True)
+    assert duplicates == {"Author2020": 3, "KEY": 2}
