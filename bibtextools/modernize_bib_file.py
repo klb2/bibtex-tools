@@ -2,7 +2,7 @@ import logging
 import re
 
 import feedparser
-from bibtexparser.customization import getnames
+from bibtexparser.customization import getnames, string_to_latex
 
 from .util import load_bib_file, write_bib_database
 from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
@@ -83,15 +83,15 @@ def replace_bib_id(entry):
     if (author is None) or (year is None) or (title is None):
         return entry.get(KEY_ID)
     first_author = author.split(" and ")[0]
-    if "," in first_author:
-        last_name = first_author.split(",")[0]
-    else:
-        last_name = first_author.split(" ")[-1]
-    last_name = _remove_unwanted_characters(last_name)
-    last_name = last_name.replace(" ", "")
+    last_name = first_author.split(",")[0]
+    #last_name = last_name.replace(" ", "")
     #first_word = re.findall(r"[\w']+", title)[0]  # this gives "a" as first word
-    first_word = re.findall(r"[\w']{3,}", title)[0]
-    new_id = "{}{}{}".format(last_name, year, first_word.lower())
+    first_word = re.findall(r"[\w]{3,}", title)
+    first_word = next((k.lower() for k in first_word if (k.lower() not in ["the"])), "")
+    new_id = "{}{}{}".format(last_name, year, first_word)
+    new_id = string_to_latex(new_id)
+    new_id = _remove_unwanted_characters(new_id)
+    new_id = new_id.replace(" ", "")
     return new_id
 
 def get_arxiv_category(eprint):
