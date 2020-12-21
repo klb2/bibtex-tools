@@ -2,7 +2,7 @@ import logging
 import re
 
 import feedparser
-from bibtexparser.customization import string_to_latex
+from bibtexparser.customization import getnames
 
 from .util import load_bib_file, write_bib_database
 from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
@@ -62,10 +62,15 @@ def clean_eprint(eprint):
 def clean_title(title):
     return re.sub(r'([A-Z]{1,}\b)|([a-zA-Z]+[A-Z]+[a-zA-Z\b]*)|(\$[\w\\-]*\$)', r'{\g<0>}', title)
 
+def clean_author(author):
+    _names = getnames([i.strip() for i in author.replace('\n', ' ').split(" and ")])
+    return " and ".join(_names)
+
 CLEAN_FUNC = {KEY_PAGES: clean_pages,
               KEY_MONTH: clean_month,
               KEY_EPRINT: clean_eprint,
-              KEY_TITLE: clean_title}
+              KEY_TITLE: clean_title,
+              KEY_AUTHOR: clean_author}
 
 
 def _remove_unwanted_characters(string):
@@ -108,8 +113,7 @@ def get_arxiv_category(eprint):
         return primary_class
 
 def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
-                       arxiv=False, verbose=logging.WARN):
-    encoding = 'utf-8'
+                       arxiv=False, verbose=logging.WARN, encoding='utf-8'):
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('modernize_bib_file')
     logger.setLevel(verbose)

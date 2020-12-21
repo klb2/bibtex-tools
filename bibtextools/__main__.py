@@ -1,4 +1,4 @@
-import sys
+import os.path
 import argparse
 import logging
 
@@ -49,7 +49,6 @@ def parse_args(parser):
     return args
 
 def main():
-    print(sys.argv)
     parser = get_arg_parser()
     args = parse_args(parser)
     logger = logging.getLogger(__name__)

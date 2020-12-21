@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added subcommand functionality. Available subcommands are `clean` and `modernize`.
 - Added `clean` functionality, that e.g., allows renaming duplicate IDs
+- The minimum required version of Python is 3.7.
 
 
 
