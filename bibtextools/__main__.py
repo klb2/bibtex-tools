@@ -16,12 +16,12 @@ DEFAULT_REMOVE = ["abstract", "annote",
                   "timestamp"]
 
 def get_arg_parser():
-    parser = argparse.ArgumentParser(prog="bibtex-tools")
+    parser = argparse.ArgumentParser(prog="bibtex-tools", add_help=False)
     subparsers = parser.add_subparsers(help="Possible sub commands", 
                                        required=True,
                                        dest="command")
-    parser.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'modern-' prefix.")
-    parser.add_argument("bib_file")
+    #parser.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'modern-' prefix.")
+    #parser.add_argument("bib_file")
     parser_modern = subparsers.add_parser("modernize",
             help="Modernize a bib file. This replaces fields by the proper BibLaTeX syntax and removes unwanted fields. It also does some cleaning steps")
     parser_modern.add_argument("-r", "--remove_fields", nargs="*",
@@ -32,6 +32,8 @@ def get_arg_parser():
     parser_modern.add_argument("--arxiv", action="store_true",
                         help="If this is set, the primaryClasses are downloaded for arXiv preprints. Requires an eprint field in the entry")
     parser_modern.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
+    parser_modern.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
+    parser_modern.add_argument("bib_file")
 
     parser_clean = subparsers.add_parser("clean", help="Clean a bib file")
     parser_clean.add_argument("-a", "--abbr_file",
@@ -40,6 +42,8 @@ def get_arg_parser():
                         default=DEFAULT_REMOVE,
                         help="Name of fields that should be removed for the clean bib file. By default, this is 'abstract', 'annote', 'file', 'keyword'. Leave empty to not delete any fields")
     parser_clean.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
+    parser_clean.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
+    parser_clean.add_argument("bib_file")
     return parser
 
 
