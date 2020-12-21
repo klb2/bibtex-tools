@@ -1,8 +1,8 @@
-import os.path
 import logging
 import re
 
 import feedparser
+from bibtexparser.customization import string_to_latex
 
 from .util import load_bib_file, write_bib_database
 from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
@@ -10,7 +10,8 @@ from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
 from .clean_bib_file import has_duplicates, replace_duplicates
 
 def clean_month(month):
-    month_str = str(month).lower()
+    _month_str = str(month).lower()
+    _month_str = _month_str.strip(".")
     MONTH_DICT = {"jan": "1",
                   "january": "1",
                   "1": "1",
@@ -47,7 +48,7 @@ def clean_month(month):
                   "december": "12",
                   "12": "12",
                  }
-    return MONTH_DICT.get(month_str, month_str)
+    return MONTH_DICT.get(_month_str, month)
 
 def clean_pages(pages):
     _split = pages.split("-")
@@ -59,7 +60,7 @@ def clean_eprint(eprint):
     return eprint.strip("arXiv:")
 
 def clean_title(title):
-    return re.sub(r'([A-Z]{1,}\b)|([a-zA-Z]+[A-Z]+[a-zA-Z\b]*)', r'{\g<0>}', title)
+    return re.sub(r'([A-Z]{1,}\b)|([a-zA-Z]+[A-Z]+[a-zA-Z\b]*)|(\$[\w\\-]*\$)', r'{\g<0>}', title)
 
 CLEAN_FUNC = {KEY_PAGES: clean_pages,
               KEY_MONTH: clean_month,
@@ -107,7 +108,7 @@ def get_arxiv_category(eprint):
         return primary_class
 
 def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
-                       arxiv=False, verbose=logging.WARN, output=None):
+                       arxiv=False, verbose=logging.WARN):
     encoding = 'utf-8'
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('modernize_bib_file')
@@ -150,9 +151,4 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
         _clean_entries.append(entry)
     if replace_ids:
         _clean_entries = replace_duplicates(_clean_entries)
-    if output is None:
-        _out_dir, _out_base = os.path.split(bib_file)
-        output = os.path.join(_out_dir, "modern-{}".format(_out_base))
-    logger.info("Saving %d cleaned entries to: %s", len(_clean_entries), output)
-    write_bib_database(_clean_entries, output, encoding=encoding)
-    logger.info("Successfully saved new file.")
+    return _clean_entries

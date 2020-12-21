@@ -9,6 +9,5 @@ The following features are planned
 * After fixing duplicates, it needs to be checked again that it did not
   introduce new duplicates
 * Unicode support, e.g., when replacing IDs replace unicode characters
-* Also use abbreviations that are defined within `bib_file` without using an
-  additional `abbr_file`.
-* Handle cases of no author (or title) when using `replace_ids`
+* Unify name scheme to `lastName, firstName`. The `bibtexparser.customization`
+  module has a function to do that.
