@@ -14,7 +14,7 @@ CLEAN_BIB_MAIN = "clean-old.bib"
 
 def test_main(tmpdir, bib_file=BIB_MAIN):
     out_file = os.path.join(tmpdir, CLEAN_BIB_MAIN)
-    sys.argv = [sys.argv[0], '-o', '{}'.format(out_file), 'modernize', bib_file]
+    sys.argv = [sys.argv[0], 'modernize', bib_file, '-o', '{}'.format(out_file)]
     main()
     with open(out_file, encoding="utf-8") as _bib_file:
         parser = BibTexParser(homogenize_fields=True, common_strings=True)
