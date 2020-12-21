@@ -25,6 +25,7 @@ setup(
         },
     packages=find_packages(),
     tests_require=['pytest', 'tox'],
+    python_requires='>=3.7',
     install_requires=['bibtexparser',
                       'feedparser'
                      ],
