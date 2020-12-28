@@ -4,6 +4,7 @@ import logging
 
 from .modernize_bib_file import modernize_bib_main
 from .clean_bib_file import clean_bib_file_main
+from .combine_bib_files import combine_bib_files_main
 from .util import write_bib_database
 
 DEFAULT_REMOVE = ["abstract", "annote",
@@ -45,6 +46,12 @@ def get_arg_parser():
     parser_clean.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
     parser_clean.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
     parser_clean.add_argument("bib_file")
+
+    parser_combine = subparsers.add_parser("combine", help="Combine multiple bib files into a single one.")
+    #parser_combine.add_argument("-a", "--abbr_file", help="Bib-file that contains abbreviations")
+    parser_combine.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
+    parser_combine.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
+    parser_combine.add_argument("bib_files", nargs="+")
     return parser
 
 
@@ -64,9 +71,15 @@ def main():
         clean_entries = modernize_bib_main(**args)
     elif command == "clean":
         clean_entries = clean_bib_file_main(**args)
+    elif command == "combine":
+        clean_entries = combine_bib_files_main(**args)
     if output is None:
-        _out_dir, _out_base = os.path.split(args['bib_file'])
-        output = os.path.join(_out_dir, "clean-{}".format(_out_base))
+        if command == "combine":
+            _bib_file_name = args['bib_files'][0]
+        else:
+            _bib_file_name = args['bib_file']
+        _out_dir, _out_base = os.path.split(_bib_file_name)
+        output = os.path.join(_out_dir, "{}-{}".format(command, _out_base))
     logger.info("Saving %d cleaned entries to: %s", len(clean_entries), output)
     write_bib_database(clean_entries, output, encoding="utf-8")
     logger.info("Successfully saved new file.")
