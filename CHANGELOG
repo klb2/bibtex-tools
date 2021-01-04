@@ -4,10 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - 202X-XX-XX
+## [0.2.0] - 2021-01-04
 ### Added
-- Added subcommand functionality. Available subcommands are `clean` and `modernize`.
-- Added `clean` functionality, that e.g., allows renaming duplicate IDs
+- Added subcommand functionality. Available subcommands are `clean`, `combine`,
+  and `modernize`.
+- Added `clean` functionality, that e.g., allows renaming duplicate IDs.
+- Added `combine` functionality that allows combining multiple bib files into a
+  single one.
 - The minimum required version of Python is 3.7.
 
 
@@ -15,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.1.1] - 2020-12-17
 ### Fixed
 - Fix issue when using `--replace_ids` with author names that already contain
-unicode characters in ASCII LaTeX format, e.g., \"{O} instead of Ö.
+  unicode characters in ASCII LaTeX format, e.g., \"{O} instead of Ö.
 
 
 
