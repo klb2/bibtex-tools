@@ -9,10 +9,10 @@ The main purpose is to clean up bib files such that match the format for the
 Right now, the following functions are available
 
 * **Cleaning bib files:** The command `bibtex-tools clean` allows to clean a
-  bib-files. This includes replacing unicode characters by the LaTeX version,
-  e.g., ä --> `{\"a}`. It is also possible to pass an additional file
-  containing abbreviations, e.g., the `IEEEabbr.bib` file that is often used by
-  authors publishing in IEEE journals.
+  bib-files. This includes replacing unicode characters by the LaTeX version.
+  It is also possible to pass an additional file containing abbreviations,
+  e.g., the `IEEEabbr.bib` file that is often used by authors publishing in
+  IEEE journals.
 * **Modernizing bib files:** The command `bibtex-tools modernize` allows to
   update the format of several fields in a bib-file.
   This includes replacing the deprecated month strings with the proper number
