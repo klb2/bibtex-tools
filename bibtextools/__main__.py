@@ -50,6 +50,7 @@ def get_arg_parser():
     parser_combine = subparsers.add_parser("combine", help="Combine multiple bib files into a single one.")
     #parser_combine.add_argument("-a", "--abbr_file", help="Bib-file that contains abbreviations")
     parser_combine.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
+    parser_combine.add_argument("--allow_duplicates", action="store_true", help="If this option is passed, the keys of the bib items remain untouched. This leads to duplicates if the same key is used in multiple files.")
     parser_combine.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
     parser_combine.add_argument("bib_files", nargs="+")
     return parser

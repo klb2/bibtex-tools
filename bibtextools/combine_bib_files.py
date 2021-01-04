@@ -16,7 +16,7 @@ def combine_bib_entries(bib_entries):
 
 
 
-def combine_bib_files_main(bib_files, remove_duplicates=False,
+def combine_bib_files_main(bib_files, allow_duplicates=False,
                            replace_ids=False, verbose=logging.WARN, 
                            encoding='utf-8'):
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
@@ -30,6 +30,6 @@ def combine_bib_files_main(bib_files, remove_duplicates=False,
     combined_entries = combine_bib_entries(bib_databases)
     #if replace_ids:
     #    combined_entries = #TODO: Adjust modernize function to support lists as input
-    if remove_duplicates:
+    if not allow_duplicates:
         combined_entries = replace_duplicates(combined_entries)
     return combined_entries
