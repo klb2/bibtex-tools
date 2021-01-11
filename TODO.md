@@ -10,3 +10,5 @@ The following features are planned
 * Known issue in `modernize` function: When authors are specified in the form
   `author={First Name {with multiple last names} and Second Author}`, the
   restructuring does not work properly.
+* Add a `convert` subcommand that allows conversion between multiple formats
+  like BibTeX, YAML, JSON, ...

@@ -9,7 +9,7 @@ from .util import write_bib_database
 
 DEFAULT_REMOVE = ["abstract", "annote",
                   "bdsk-url-1",
-                  #"comments",
+                  #"comments", "comment",
                   "date-added", "date-modified", 
                   "file",
                   "keyword", "keywords", 
