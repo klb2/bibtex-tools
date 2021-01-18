@@ -12,3 +12,5 @@ The following features are planned
   restructuring does not work properly.
 * Add a `convert` subcommand that allows conversion between multiple formats
   like BibTeX, YAML, JSON, ...
+* Add `_` as a character that needs to be shielded in math mode
+* Remove trailing comma at the end of author list
