@@ -71,12 +71,16 @@ def remove_fields_from_entry(entry, remove_fields=None):
 
 remove_fields_from_database = cleaning_function()(remove_fields_from_entry)
 
+def _replace_textbackslash(matchobj):
+    return matchobj.group(0).replace(r'\textbackslash ', '\\')
+
 def replace_unicode_in_entry(entry):
     entry = convert_to_unicode(entry)
     for _field in entry:
         if _field not in ("ID",):
             unicode_free = string_to_latex(entry[_field])
-            entry[_field] = re.sub(r'\\textdollar (.*?)( *)\\textdollar ', r'$\g<1>$', unicode_free)
+            math_dollar = re.sub(r'\\textdollar (.*?)( *)\\textdollar ', r'$\g<1>$', unicode_free)
+            entry[_field] = re.sub(r'\$(.*)(\\textbackslash )(.*)\$', _replace_textbackslash, math_dollar)
     return entry
 
 replace_unicode_in_database = cleaning_function()(replace_unicode_in_entry)
