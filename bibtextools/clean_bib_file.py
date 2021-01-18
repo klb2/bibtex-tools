@@ -1,6 +1,7 @@
 import logging
 import copy
 import functools
+import re
 
 from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.customization import string_to_latex, convert_to_unicode
@@ -74,7 +75,8 @@ def replace_unicode_in_entry(entry):
     entry = convert_to_unicode(entry)
     for _field in entry:
         if _field not in ("ID",):
-            entry[_field] = string_to_latex(entry[_field])
+            unicode_free = string_to_latex(entry[_field])
+            entry[_field] = re.sub(r'\\textdollar (.*?)( *)\\textdollar ', r'$\g<1>$', unicode_free)
     return entry
 
 replace_unicode_in_database = cleaning_function()(replace_unicode_in_entry)

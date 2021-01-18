@@ -48,11 +48,13 @@ def test_replace_unicode():
     entries = bib_database.get_entry_dict()
     key = "Cesar2013"
     clean_entry = clean_bib_file.replace_unicode_in_entry(entries[key].copy())
-    assert (entries[key]['author'] == "Jean César") and (clean_entry['author'] == r'Jean C{\'e}sar')
+    assert ((entries[key]['author'] == "Jean César") and
+            (clean_entry['author'] == r'Jean C{\'e}sar'))
 
 def test_not_replace_converted_unicode():
     bib_database = load_bib_file(UNICODE)
     entries = bib_database.get_entry_dict()
     key = "Author1970"
     clean_entry = clean_bib_file.replace_unicode_in_entry(entries[key].copy())
-    assert (entries[key]['author'] == r"Bj{\"o}rn Author")
+    assert ((clean_entry['author'] == r"Bj{\"o}rn Author") and
+            (clean_entry["journal"] == r'With $\mu$ math expressions'))
