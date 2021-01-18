@@ -29,4 +29,4 @@ def test_main_combine(tmpdir, bib_file=[BIB_MAIN, SECOND_BIB]):
     with open(out_file, encoding="utf-8") as _bib_file:
         parser = BibTexParser(homogenize_fields=True, common_strings=True)
         bib_database = bibtexparser.load(_bib_file, parser=parser)
-    assert len(bib_database.get_entry_list()) == 7
+    assert len(bib_database.get_entry_list()) == 8

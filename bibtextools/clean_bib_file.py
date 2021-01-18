@@ -3,7 +3,7 @@ import copy
 import functools
 
 from bibtexparser.bibdatabase import BibDatabase
-from bibtexparser.customization import string_to_latex
+from bibtexparser.customization import string_to_latex, convert_to_unicode
 
 from .const import KEY_ID
 from .util import load_bib_file, write_bib_database
@@ -71,6 +71,7 @@ def remove_fields_from_entry(entry, remove_fields=None):
 remove_fields_from_database = cleaning_function()(remove_fields_from_entry)
 
 def replace_unicode_in_entry(entry):
+    entry = convert_to_unicode(entry)
     for _field in entry:
         if _field not in ("ID",):
             entry[_field] = string_to_latex(entry[_field])
