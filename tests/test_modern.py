@@ -24,3 +24,14 @@ def test_arxiv_primaryclass(bib_file=BIB_MAIN):
     _entry = [k for k in clean_entries
               if k[modernize_bib_file.KEY_ID] == "Besser2020CLpart1"][0]
     assert _entry[modernize_bib_file.KEY_CATEGORY] == "cs.IT"
+
+def test_author_getnames():
+    old_names = ["Last, First", "{van Name}, First", "{One Single Name}",
+                 "First {di Last Name}", "von Name, First", "CompanyName"]
+    expected = ["Last, First", "{van Name}, First", "{One Single Name}",
+                "{di Last Name}, First", "von Name, First", "CompanyName"]
+    new_names = modernize_bib_file.getnames(old_names)
+    print(old_names)
+    print(new_names)
+    assert new_names == expected
+

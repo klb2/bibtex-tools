@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Already converted unicode symbols are not touched when cleaning unicode 
   characters.
+- Improve author name cleaning in `modernize` subcommand. Names that are
+  shielded by `{}` are now split into first and last names respecting the
+  grouping.
 
 
 
