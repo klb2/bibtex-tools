@@ -18,7 +18,8 @@ def load_bib_file(bib_file, abbr=None, encoding="utf-8"):
             abbr = load_abbr(abbr, encoding=encoding)
         bibdatabase.COMMON_STRINGS.update(abbr)
     with open(bib_file, encoding=encoding) as _bib_file:
-        parser = BibTexParser(homogenize_fields=True, common_strings=True)
+        parser = BibTexParser(homogenize_fields=True, common_strings=True,
+                              ignore_nonstandard_types=False)
         bib_database = bibtexparser.load(_bib_file, parser=parser)
     return bib_database
 
