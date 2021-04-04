@@ -12,7 +12,7 @@ DEFAULT_REMOVE = ["abstract", "annote",
                   #"comments", "comment",
                   "date-added", "date-modified", 
                   "file",
-                  "keyword", "keywords", 
+                  #"keyword", "keywords", 
                   "owner",
                   "timestamp"]
 
