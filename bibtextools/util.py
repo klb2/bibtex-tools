@@ -6,6 +6,8 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser import bibdatabase
 from bibtexparser.bibdatabase import BibDatabase
 
+from .const import KEY_ID
+
 def load_abbr(abbr_file, encoding="utf-8"):
     with open(abbr_file, encoding=encoding) as _abbr_file:
         parser = BibTexParser(homogenize_fields=True, common_strings=True)
@@ -24,11 +26,13 @@ def load_bib_file(bib_file, abbr=None, encoding="utf-8"):
     return bib_database
 
 
-def write_bib_database(entries, out_file, encoding="utf-8"):
+def write_bib_database(entries, out_file, encoding="utf-8",
+                       order_entries_by=(KEY_ID,)):
     clean_database = BibDatabase()
     clean_database.entries = entries
     with open(out_file, 'w', encoding=encoding) as _out_file:
         writer = BibTexWriter()
+        writer.order_entries_by = order_entries_by
         writer.add_trailing_comma = True
         writer.indent = "\t"  # "  "
         _out_file.write(writer.write(clean_database))
