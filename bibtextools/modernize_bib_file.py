@@ -101,7 +101,7 @@ def clean_eprint(eprint):
     return eprint.strip("arXiv:")
 
 def clean_title(title):
-    _shielded = re.sub(r'([A-Z]{1,}\b)|([a-zA-Z]+[A-Z]+[a-zA-Z\b]*)|(\$[\w\\+-]*\$)', r'{\g<0>}', title)
+    _shielded = re.sub(r'([A-Z]+\b)|([a-zA-Z]+[A-Z0-9]+[a-zA-Z\b]*)|(\$[\w\\+-=]*\$)', r'{\g<0>}', title)
     return re.sub(r'[{]{2,}(.*?)[}]{2,}', r'{\g<1>}', _shielded)
 
 def clean_author(author):
