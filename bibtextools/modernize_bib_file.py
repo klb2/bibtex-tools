@@ -100,9 +100,14 @@ def clean_pages(pages):
 def clean_eprint(eprint):
     return eprint.strip("arXiv:")
 
-def clean_title(title):
+def clean_title(title, strip_curly=False):
     _shielded = re.sub(r'([A-Z]+\b)|([a-zA-Z]+[A-Z0-9]+[a-zA-Z\b]*)|(\$[\w\\+-=]*\$)', r'{\g<0>}', title)
-    return re.sub(r'[{]{2,}(.*?)[}]{2,}', r'{\g<1>}', _shielded)
+    _shielded = re.sub(r'\{{2}((?:\{??[^\{]*?))\}{2}', r'{\g<1>}', _shielded)
+    if strip_curly:
+        __without_inner = re.sub(r'\{((?:\{??[^\{]*?))\}', "", _shielded)
+        if __without_inner.startswith(r"{") and __without_inner.endswith(r"}"):
+            _shielded = _shielded[1:-1]
+    return _shielded
 
 def clean_author(author):
     _names = getnames([i.strip() for i in author.replace('\n', ' ').split(" and ")])

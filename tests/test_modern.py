@@ -1,3 +1,5 @@
+import pytest
+
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 
@@ -35,3 +37,13 @@ def test_author_getnames():
     print(new_names)
     assert new_names == expected
 
+@pytest.mark.parametrize("title,expected",
+                         [("MIMO", r"{MIMO}"), ("M2M", r"{M2M}"),
+                          (r"Acro IN mmWave Title", r"Acro {IN} {mmWave} Title"),
+                          (r"Math $\mu=\alpha$", r"Math {$\mu=\alpha$}"),
+                          (r"Already {ACRO} in", r"Already {ACRO} in"),
+                          (r"{Surrounding {ACRO}}", r"{Surrounding {ACRO}}"),
+                         ])
+def test_title_shielding(title, expected):
+    cleaned = modernize_bib_file.clean_title(title)
+    assert cleaned == expected
