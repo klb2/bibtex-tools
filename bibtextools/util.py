@@ -22,6 +22,7 @@ def load_bib_file(bib_file, abbr=None, encoding="utf-8"):
     with open(bib_file, encoding=encoding) as _bib_file:
         parser = BibTexParser(homogenize_fields=True, common_strings=True,
                               ignore_nonstandard_types=False)
+        parser.alt_dict.pop("keywords")
         bib_database = bibtexparser.load(_bib_file, parser=parser)
     return bib_database
 
