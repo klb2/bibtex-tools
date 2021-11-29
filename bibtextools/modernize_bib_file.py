@@ -50,7 +50,7 @@ def getnames(names):
     return tidynames
 
 
-def clean_month(month):
+def clean_month(month, **kwargs):
     _month_str = str(month).lower()
     _month_str = _month_str.strip(".")
     MONTH_DICT = {"jan": "1",
@@ -91,34 +91,33 @@ def clean_month(month):
                  }
     return MONTH_DICT.get(_month_str, month)
 
-def clean_pages(pages):
+def clean_pages(pages, **kwargs):
     _split = pages.split("-")
     if "" in _split:
         _split.remove("") # remove empty entries in case '--' was already used
     return "--".join(_split)
 
-def clean_eprint(eprint):
+def clean_eprint(eprint, **kwargs):
     return eprint.strip("arXiv:")
+
 
 def __surrounded_by_curly(title):
     return title.startswith(r"{") and title.endswith(r"}")
 
-
-def clean_title(title, shield_title=False):
+def clean_title(title, shield_title=False, **kwargs):
     _shielded = re.sub(r'([0-9A-Z]+\b)|([a-zA-Z]+[A-Z0-9]+[a-zA-Z\b]*)|(\$[\w\\+-=]*\$)', r'{\g<0>}', title)
     _shielded = re.sub(r'\{{2}((?:\{??[^\{]*?))\}{2}', r'{\g<1>}', _shielded)
     _re_inner_acro = r'\{((?:\{??[^\{]*?))\}'
-    __without_inner = re.sub(_re_inner_acro, "\g<1>", _shielded)
+    __without_inner = re.sub(_re_inner_acro, r"\g<1>", _shielded)
     __remove_curly_w_acros = __surrounded_by_curly(__without_inner)
     __remove_curly_wo_acros = (len(re.findall(_re_inner_acro, _shielded)) == 1) and __surrounded_by_curly(title)
     if __remove_curly_w_acros or __remove_curly_wo_acros:
         _shielded = _shielded[1:-1]
     if shield_title:
-        print(_shielded)
         _shielded = r'{' + _shielded + r'}'
     return _shielded
 
-def clean_author(author):
+def clean_author(author, **kwargs):
     _names = getnames([i.strip() for i in author.replace('\n', ' ').split(" and ")])
     return " and ".join(_names)
 
@@ -169,7 +168,8 @@ def get_arxiv_category(eprint):
         return primary_class
 
 def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
-                       arxiv=False, verbose=logging.WARN, encoding='utf-8'):
+                       arxiv=False, verbose=logging.WARN, encoding='utf-8',
+                       **kwargs):
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('modernize_bib_file')
     logger.setLevel(verbose)
@@ -191,7 +191,7 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
             _value = entry.get(_key)
             if _value is not None:
                 logger.debug("Cleaning field: %s", _key)
-                entry[_key] = _clean_func(_value)
+                entry[_key] = _clean_func(_value, **kwargs)
         if arxiv:
             eprint = entry.get(KEY_EPRINT)
             primary_class = entry.get(KEY_CATEGORY)
