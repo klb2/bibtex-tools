@@ -8,9 +8,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - It is now possible to change the sorting of the entries when writing to a
   file
+- Added the `shield_title` argument for modernizing the title field, which
+  allows adding/removing curly brackets around the title field.
+  The argument can be used by setting the `--shield_title` flag in the
+  `modernize` command.
 
 ### Changed
 - The fields `keyword` and `keywords` do not get removed by default
+- Surrounding curly brackets in the title field are removed by default. Use the
+  `--shield_title` argument to avoid this.
 
 
 

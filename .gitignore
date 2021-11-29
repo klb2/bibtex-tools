@@ -325,3 +325,8 @@ TSWLatexianTemp*
 
 # standalone packages
 *.sta
+
+
+# bibfiles
+modernize-*.bib
+clean-*.bib
