@@ -1,5 +1,8 @@
 # BibTeX Tools
 
+[![PyPI version](https://badge.fury.io/py/bibtextools.svg)](https://badge.fury.io/py/bibtextools)
+![Gitlab Pipeline](https://gitlab.com/klb2/bibtex-tools/badges/master/pipeline.svg)
+
 This repository contains a collection of functions that might be helpful when
 working with BibTeX files (`*.bib`).
 
