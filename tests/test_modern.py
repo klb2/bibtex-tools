@@ -42,8 +42,24 @@ def test_author_getnames():
                           (r"Acro IN mmWave Title", r"Acro {IN} {mmWave} Title"),
                           (r"Math $\mu=\alpha$", r"Math {$\mu=\alpha$}"),
                           (r"Already {ACRO} in", r"Already {ACRO} in"),
+                          (r"{Surrounding {ACRO}}", r"Surrounding {ACRO}"),
+                          (r"5G should be SHIELded", r"{5G} should be {SHIELded}"),
+                          (r"Regular title with Names", r'Regular title with Names'),
+                         ])
+def test_title_shielding_acronyms(title, expected):
+    cleaned = modernize_bib_file.clean_title(title)
+    assert cleaned == expected
+
+@pytest.mark.parametrize("title,expected",
+                         [("MIMO", r"{{MIMO}}"), ("M2M", r"{{M2M}}"),
+                          (r"{MIMO}", r"{MIMO}"), (r"{M2M}", r"{M2M}"),
+                          (r"Acro IN mmWave Title", r"{Acro {IN} {mmWave} Title}"),
+                          (r"Math $\mu=\alpha$", r"{Math {$\mu=\alpha$}}"),
+                          (r"Already {ACRO} in", r"{Already {ACRO} in}"),
                           (r"{Surrounding {ACRO}}", r"{Surrounding {ACRO}}"),
+                          (r"{All in curly}", r"{All in curly}"),
+                          (r"Regular title with Names", r'{Regular title with Names}'),
                          ])
 def test_title_shielding(title, expected):
-    cleaned = modernize_bib_file.clean_title(title)
+    cleaned = modernize_bib_file.clean_title(title, shield_title=True)
     assert cleaned == expected

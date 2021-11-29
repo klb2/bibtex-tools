@@ -100,13 +100,22 @@ def clean_pages(pages):
 def clean_eprint(eprint):
     return eprint.strip("arXiv:")
 
-def clean_title(title, strip_curly=False):
-    _shielded = re.sub(r'([A-Z]+\b)|([a-zA-Z]+[A-Z0-9]+[a-zA-Z\b]*)|(\$[\w\\+-=]*\$)', r'{\g<0>}', title)
+def __surrounded_by_curly(title):
+    return title.startswith(r"{") and title.endswith(r"}")
+
+
+def clean_title(title, shield_title=False):
+    _shielded = re.sub(r'([0-9A-Z]+\b)|([a-zA-Z]+[A-Z0-9]+[a-zA-Z\b]*)|(\$[\w\\+-=]*\$)', r'{\g<0>}', title)
     _shielded = re.sub(r'\{{2}((?:\{??[^\{]*?))\}{2}', r'{\g<1>}', _shielded)
-    if strip_curly:
-        __without_inner = re.sub(r'\{((?:\{??[^\{]*?))\}', "", _shielded)
-        if __without_inner.startswith(r"{") and __without_inner.endswith(r"}"):
-            _shielded = _shielded[1:-1]
+    _re_inner_acro = r'\{((?:\{??[^\{]*?))\}'
+    __without_inner = re.sub(_re_inner_acro, "\g<1>", _shielded)
+    __remove_curly_w_acros = __surrounded_by_curly(__without_inner)
+    __remove_curly_wo_acros = (len(re.findall(_re_inner_acro, _shielded)) == 1) and __surrounded_by_curly(title)
+    if __remove_curly_w_acros or __remove_curly_wo_acros:
+        _shielded = _shielded[1:-1]
+    if shield_title:
+        print(_shielded)
+        _shielded = r'{' + _shielded + r'}'
     return _shielded
 
 def clean_author(author):
