@@ -1,7 +1,7 @@
 # BibTeX Tools
 
 [![PyPI version](https://badge.fury.io/py/bibtextools.svg)](https://badge.fury.io/py/bibtextools)
-![Gitlab Pipeline](https://gitlab.com/klb2/bibtex-tools/badges/master/pipeline.svg)
+[![Gitlab Pipeline](https://gitlab.com/klb2/bibtex-tools/badges/master/pipeline.svg)](https://gitlab.com/klb2/bibtex-tools/-/pipelines)
 
 This repository contains a collection of functions that might be helpful when
 working with BibTeX files (`*.bib`).
@@ -29,3 +29,19 @@ Right now, the following functions are available
 
 Use `bibtex-tools --help` to list the possible commands and `bibtex-tools
 <command> --help` to list the possible options for the sub-command `<command>`.
+
+
+## Installation
+You can install the package from PyPI using
+```bash
+pip3 install bibtextools
+```
+
+You can also install the (possibly unstable) development version from the Git
+repository using
+```bash
+git clone https://gitlab.com/klb2/bibtex-tools
+cd bibtex-tools
+git checkout dev # if you want to checkout the development version
+pip3 install . # you can use the -e option to track changes
+```
