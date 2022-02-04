@@ -29,9 +29,11 @@ def test_arxiv_primaryclass(bib_file=BIB_MAIN):
 
 def test_author_getnames():
     old_names = ["Last, First", "{van Name}, First", "{One Single Name}",
-                 "First {di Last Name}", "von Name, First", "CompanyName"]
+                 "First {di Last Name}", "von Name, First", "CompanyName",
+                 r'Ludger R{\"{u}}schendorf']
     expected = ["Last, First", "{van Name}, First", "{One Single Name}",
-                "{di Last Name}, First", "von Name, First", "CompanyName"]
+                "{di Last Name}, First", "von Name, First", "CompanyName",
+                r'R{\"{u}}schendorf, Ludger']
     new_names = modernize_bib_file.getnames(old_names)
     print(old_names)
     print(new_names)

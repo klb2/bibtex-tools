@@ -26,9 +26,11 @@ def getnames(names):
             tidynames.append(namestring)
             continue
         else:
-            shielded_names = re.findall(r'[{].*?[}]', namestring)
+            #shielded_names = re.findall(r'[{].*?[}]', namestring)
+            shielded_names = re.findall(r'(\s|^)([{].*?[}])', namestring)
             if shielded_names:
                 last = shielded_names.pop()
+                last = last[1]
                 if namestring.endswith(last):
                     firsts = namestring[:-len(last)].split()
                 else:
