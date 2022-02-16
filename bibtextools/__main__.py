@@ -1,10 +1,12 @@
 import os.path
-import argparse
 import logging
 
-from .modernize_bib_file import modernize_bib_main
+import click
+
+from . import __version__
 from .clean_bib_file import clean_bib_file_main
 from .combine_bib_files import combine_bib_files_main
+from .modernize_bib_file import modernize_bib_main
 from .util import write_bib_database
 
 DEFAULT_REMOVE = ["abstract", "annote",
@@ -16,76 +18,62 @@ DEFAULT_REMOVE = ["abstract", "annote",
                   "owner",
                   "timestamp"]
 
-def get_arg_parser():
-    parser = argparse.ArgumentParser(prog="bibtex-tools")
-    subparsers = parser.add_subparsers(help="Possible sub commands", 
-                                       required=True,
-                                       dest="command")
-    #parser.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'modern-' prefix.")
-    #parser.add_argument("bib_file")
-    parser_modern = subparsers.add_parser("modernize",
-            help="Modernize a bib file. This replaces fields by the proper BibLaTeX syntax and removes unwanted fields. It also does some cleaning steps")
-    parser_modern.add_argument("-r", "--remove_fields", nargs="*",
-                        default=DEFAULT_REMOVE,
-                        help="Name of fields that should be removed for the clean bib file. By default, this is 'abstract', 'annote', 'file', 'keyword'. Leave empty to not delete any fields")
-    parser_modern.add_argument("--replace_ids", action="store_true",
-                        help="If this is set, the IDs of the bib entries are replaced by a fixed scheme")
-    parser_modern.add_argument("--arxiv", action="store_true",
-                        help="If this is set, the primaryClasses are downloaded for arXiv preprints. Requires an eprint field in the entry")
-    parser_modern.add_argument("--shield_title", action="store_true",
-                        help="If this is set, the title field will be surrounded by curly brackets.")
-    parser_modern.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
-    parser_modern.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
-    parser_modern.add_argument("bib_file")
 
-    parser_clean = subparsers.add_parser("clean", help="Clean a bib file. This can remove unwanted fields, checks for duplicates, replaces abbreviations, and converts unicode characters.")
-    parser_clean.add_argument("-a", "--abbr_file",
-                              help="Bib-file that contains abbreviations")
-    parser_clean.add_argument("-r", "--remove_fields", nargs="*",
-                        default=DEFAULT_REMOVE,
-                        help="Name of fields that should be removed for the clean bib file. By default, this is 'abstract', 'annote', 'file', 'keyword'. Leave empty to not delete any fields")
-    parser_clean.add_argument("-u", "--replace_unicode", action="store_true", help='Replace unicode characters by the LaTeX syntax, e.g., ä --> {\\"a}')
-    parser_clean.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
-    parser_clean.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
-    parser_clean.add_argument("bib_file")
-
-    parser_combine = subparsers.add_parser("combine", help="Combine multiple bib files into a single one.")
-    #parser_combine.add_argument("-a", "--abbr_file", help="Bib-file that contains abbreviations")
-    parser_combine.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
-    parser_combine.add_argument("--allow_duplicates", action="store_true", help="If this option is passed, the keys of the bib items remain untouched. This leads to duplicates if the same key is used in multiple files.")
-    parser_combine.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
-    parser_combine.add_argument("bib_files", nargs="+")
-    return parser
+def print_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo(__version__)
+    ctx.exit()
 
 
-def parse_args(parser):
-    args = vars(parser.parse_args())
-    args['verbose'] = max([logging.WARN - 10*args['verbose'], logging.DEBUG])
-    return args
+@click.group()
+@click.pass_context
+@click.argument("bib_file", required=True, type=click.Path(exists=True))
+@click.option("-o", "--output", type=click.Path(exists=False))
+@click.option("-v", "--verbose", count=True)
+@click.option("--version", is_flag=True, callback=print_version, expose_value=False, is_eager=True)
+def main(ctx, bib_file, output, verbose):
+    ctx.params['verbose'] = max([logging.WARN - 10*verbose, logging.DEBUG])
 
-def main():
-    parser = get_arg_parser()
-    args = parse_args(parser)
-    logger = logging.getLogger(__name__)
-    logger.setLevel(args['verbose'])
-    command = args.pop("command")
-    output = args.pop("output")
-    if command == "modernize":
-        clean_entries = modernize_bib_main(**args)
-    elif command == "clean":
-        clean_entries = clean_bib_file_main(**args)
-    elif command == "combine":
-        clean_entries = combine_bib_files_main(**args)
+
+@main.command()
+@click.pass_context
+@click.option("-r", "--remove_fields", multiple=True, default=DEFAULT_REMOVE)
+@click.option("--replace_ids", is_flag=True, default=False)
+@click.option("--arxiv", is_flag=True, default=False)
+@click.option("--shield_title", is_flag=True, default=False)
+def modernize(ctx, remove_fields, replace_ids, arxiv, shield_title):
+    clean_entries = modernize_bib_main(remove_fields=remove_fields,
+                                       replace_ids=replace_ids,
+                                       arxiv=arxiv,
+                                       shield_title=shield_title,
+                                       verbose=ctx.parent.params['verbose'],
+                                       bib_file=ctx.parent.params['bib_file'])
+    return clean_entries
+
+@main.command()
+@click.pass_context
+@click.option("-a", "--abbr_file", type=click.Path(exists=True, dir_okay=False))
+@click.option("-r", "--remove_fields", multiple=True, default=DEFAULT_REMOVE)
+@click.option("-u", "--replace_unicode", is_flag=True)
+def clean(ctx, abbr_file, remove_fields, replace_unicode):
+    clean_entries = clean_bib_file_main(remove_fields=remove_fields,
+                                        replace_unicode=replace_unicode,
+                                        abbr_file=abbr_file,
+                                        verbose=ctx.parent.params['verbose'],
+                                        bib_file=ctx.parent.params['bib_file'])
+    return clean_entries
+
+
+@main.result_callback()
+@click.pass_context
+def save_file(ctx, result, bib_file, output, verbose):
     if output is None:
-        if command == "combine":
-            _bib_file_name = args['bib_files'][0]
-        else:
-            _bib_file_name = args['bib_file']
-        _out_dir, _out_base = os.path.split(_bib_file_name)
-        output = os.path.join(_out_dir, "{}-{}".format(command, _out_base))
-    logger.info("Saving %d cleaned entries to: %s", len(clean_entries), output)
-    write_bib_database(clean_entries, output, encoding="utf-8")
-    logger.info("Successfully saved new file.")
+        _out_dir, _out_base = os.path.split(bib_file)
+        output = os.path.join(_out_dir, "{}-{}".format(ctx.invoked_subcommand, _out_base))
+    write_bib_database(result, output, encoding='utf-8')
+    if ctx.params['verbose'] <= logging.INFO:
+        click.echo("Saved {:d} entries to {}".format(len(result), output))
 
 if __name__ == "__main__":
     main()

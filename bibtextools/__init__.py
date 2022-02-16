@@ -1,6 +1,6 @@
 __author__ = "Karl-Ludwig Besser"
 __email__ = "k.besser@tu-bs.de"
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 from . import clean_bib_file
 from . import modernize_bib_file
