@@ -27,7 +27,8 @@ setup(
     tests_require=['pytest', 'tox'],
     python_requires='>=3.7',
     install_requires=['bibtexparser',
-                      'feedparser'
+                      'feedparser',
+                      'click',
                      ],
     entry_points={"console_scripts": ["bibtex-tools=bibtextools.__main__:main"]},
 )
