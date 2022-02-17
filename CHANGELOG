@@ -5,9 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [0.4.0] - 2022-XX-XX
-### Changed
-- The command line interface is completely refactored and using the `click`
-  library now.
+### Added
+- A completely refactored command line interface using the `click` library is
+  added. This will replace the current CLI in a future version.
 
 ### Fixed
 - Fixed a bug in getting author names when shielded umlauts were already
