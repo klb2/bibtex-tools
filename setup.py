@@ -18,10 +18,10 @@ setup(
     long_description=long_desc,
     keywords="bibtex latex biber bibliography",
     license='GPLv3',
-    url='https://gitlab.com/klb2/bibtex-tools',
+    url='https://github.com/klb2/bibtex-tools',
     project_urls={
         #'Documentation': "https://digcommpy.readthedocs.io/",
-        'Source Code': 'https://gitlab.com/klb2/bibtex-tools',
+        'Source Code': 'https://github.com/klb2/bibtex-tools',
         },
     packages=find_packages(),
     tests_require=['pytest', 'tox'],
