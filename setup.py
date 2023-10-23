@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-from bibtextools import __version__, __author__, __email__
+#from bibtextools import __version__, __author__, __email__
 
 with open("README.md") as rm:
     long_desc = rm.read()
@@ -10,9 +10,9 @@ with open("README.md") as rm:
 
 setup(
     name = "bibtextools",
-    version = __version__,
-    author = __author__,
-    author_email = __email__,
+    version = "0.3.1",
+    author = "Karl-Ludwig Besser",
+    author_email = "karl.besser@princeton.edu",
     description = "Tools for working with BibTeX files",
     long_description_content_type="text/markdown",
     long_description=long_desc,
