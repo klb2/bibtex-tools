@@ -57,4 +57,5 @@ def test_not_replace_converted_unicode():
     key = "Author1970"
     clean_entry = clean_bib_file.replace_unicode_in_entry(entries[key].copy())
     assert ((clean_entry['author'] == r"Bj{\"o}rn Author") and
-            (clean_entry["journal"] == r'With 6$\times$6 math expressions'))
+            (clean_entry["journal"] == r'With 6$\times$6 math expressions') and
+            (clean_entry['pages'] == r'12 \& 13'))

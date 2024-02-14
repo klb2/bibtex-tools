@@ -1,3 +1,4 @@
 bibtexparser
 feedparser
 click
+git+https://github.com/pierre-24/pyiso4.git

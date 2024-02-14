@@ -3,10 +3,11 @@ import re
 
 import feedparser
 from bibtexparser.customization import string_to_latex#, getnames
+from pyiso4.ltwa import Abbreviate
 
 from .util import load_bib_file, write_bib_database
 from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
-                    KEY_MONTH, KEY_PAGES, KEY_TITLE, KEY_YEAR)
+                    KEY_MONTH, KEY_PAGES, KEY_TITLE, KEY_YEAR, KEYS_JOURNAL)
 from .clean_bib_file import has_duplicates, replace_duplicates
 
 def getnames(names):
@@ -169,9 +170,20 @@ def get_arxiv_category(eprint):
     else:
         return primary_class
 
+def abbreviate_journalname(entry):
+    entry = entry.copy()
+    abbreviator = Abbreviate.create()
+    for _key in KEYS_JOURNAL:
+        journal = entry.get(_key, False)
+        if not journal:
+            continue
+        journal_abbr = abbreviator(journal)
+        entry[_key] = journal_abbr
+    return entry
+
 def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
-                       arxiv=False, verbose=logging.WARN, encoding='utf-8',
-                       **kwargs):
+                       arxiv=False, iso4=False, verbose=logging.WARN,
+                       encoding='utf-8', **kwargs):
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('modernize_bib_file')
     logger.setLevel(verbose)
@@ -210,6 +222,8 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
         if replace_ids:
             logger.debug("Replacing bib ID")
             entry[KEY_ID] = replace_bib_id(entry)
+        if iso4:
+            entry = abbreviate_journalname(entry)
         _clean_entries.append(entry)
     if replace_ids:
         _clean_entries = replace_duplicates(_clean_entries)

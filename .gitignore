@@ -330,3 +330,7 @@ TSWLatexianTemp*
 # bibfiles
 modernize-*.bib
 clean-*.bib
+
+# Virtual environments
+venv/
+.venv/

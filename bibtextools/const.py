@@ -8,3 +8,4 @@ KEY_EPRINT = "eprint"
 KEY_ARCHIVE = "archiveprefix"
 KEY_CATEGORY = "primaryclass"
 KEY_ENTRYTYPE = "ENTRYTYPE"
+KEYS_JOURNAL = ["journal", "journaltitle"]
