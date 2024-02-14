@@ -43,12 +43,14 @@ def main(ctx, output, verbose):
 @click.option("--replace_ids", is_flag=True, default=False)
 @click.option("--arxiv", is_flag=True, default=False)
 @click.option("--shield_title", is_flag=True, default=False)
-def modernize(ctx, bib_file, remove_fields, replace_ids, arxiv, shield_title):
+@click.option("--iso4", is_flag=True, default=False)
+def modernize(ctx, bib_file, remove_fields, replace_ids, arxiv, shield_title, iso4):
     clean_entries = modernize_bib_main(remove_fields=remove_fields,
                                        replace_ids=replace_ids,
                                        arxiv=arxiv,
                                        shield_title=shield_title,
                                        bib_file=bib_file,
+                                       iso4=iso4,
                                        #bib_file=ctx.parent.params['bib_file'],
                                        verbose=ctx.parent.params['verbose'])
     return clean_entries, bib_file
