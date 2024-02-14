@@ -8,7 +8,7 @@ dynamic = ["version"]
 authors = [
   {name = "Karl-Ludwig Besser", email = "karl.besser@princeton.edu"}
 ]
-requires-python = '>=3.7'
+requires-python = '>=3.8'
 description = "Tools for working with BibTeX files"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -29,8 +29,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-  "pytest",
-  "tox"
+  "pytest"
 ]
 
 [project.urls]

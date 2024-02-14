@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.4.0] - 2024-02-13
+## [0.4.0] - 2024-02-14
 ### Added
 - Added function to abbreviate journal names based on the ISO4 standard using
   the `pyiso4` implementation as part of the `modernize` command. 
@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Update packaging structure and metadata from old `setup.py` to
   `pyproject.toml`
+- Change minimum Python version requirement to 3.8 due to the pyiso4 dependency
 
 
 
