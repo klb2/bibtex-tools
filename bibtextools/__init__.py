@@ -1,6 +1,6 @@
 __author__ = "Karl-Ludwig Besser"
 __email__ = "karl.besser@princeton.edu"
-__version__ = "0.3.1"
+__version__ = "0.4.0"
 
 from . import clean_bib_file
 from . import modernize_bib_file
