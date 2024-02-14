@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bibtextools"
+dynamic = ["version"]
+authors = [
+  {name = "Karl-Ludwig Besser", email = "karl.besser@princeton.edu"}
+]
+requires-python = '>=3.7'
+description = "Tools for working with BibTeX files"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["bibtex", "latex", "biber", "bibliography"]
+classifiers = [
+	"Intended Audience :: Science/Research",
+	"License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3 :: Only",
+	"Topic :: Scientific/Engineering"
+]
+dependencies = [
+  "bibtexparser",
+  "feedparser",
+  "click",
+  "pyiso4@git+https://github.com/pierre-24/pyiso4.git"
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "tox"
+]
+
+[project.urls]
+Repository = 'https://github.com/klb2/bibtex-tools'
+
+[project.scripts]
+bibtex-tools = "bibtextools.__main__:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "bibtextools.__version__"}
