@@ -1,4 +1,4 @@
 bibtexparser
 feedparser
 click
-git+https://github.com/pierre-24/pyiso4.git
+pyiso4>=0.1.3
