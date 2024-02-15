@@ -1,7 +1,8 @@
 # BibTeX Tools
 
-[![PyPI version](https://badge.fury.io/py/bibtextools.svg)](https://badge.fury.io/py/bibtextools)
+[![PyPI - Version](https://img.shields.io/pypi/v/bibtextools)](https://pypi.org/project/bibtextools/)
 [![Pytest](https://github.com/klb2/bibtex-tools/actions/workflows/pytest.yml/badge.svg)](https://github.com/klb2/bibtex-tools/actions/workflows/pytest.yml)
+![GitHub License](https://img.shields.io/github/license/klb2/bibtex-tools)
 
 This repository contains a collection of functions that might be helpful when
 working with BibTeX files (`*.bib`).
@@ -75,7 +76,7 @@ pip3 install bibtextools
 You can also install the (possibly unstable) development version from the Git
 repository using
 ```bash
-git clone https://gitlab.com/klb2/bibtex-tools
+git clone https://github.com/klb2/bibtex-tools
 cd bibtex-tools
 git checkout dev # if you want to checkout the development version
 pip3 install . # you can use the -e option to track changes
