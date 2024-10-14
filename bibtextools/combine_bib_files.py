@@ -3,7 +3,7 @@ import logging
 
 from bibtexparser.bibdatabase import BibDatabase
 
-from .clean_bib_file import replace_duplicates
+from .clean_bib_file import replace_duplicate_ids
 from .modernize_bib_file import replace_bib_id
 from .util import load_bib_file
 
@@ -31,5 +31,5 @@ def combine_bib_files_main(bib_files, allow_duplicates=False,
     #if replace_ids:
     #    combined_entries = #TODO: Adjust modernize function to support lists as input
     if not allow_duplicates:
-        combined_entries = replace_duplicates(combined_entries)
+        combined_entries = replace_duplicate_ids(combined_entries)
     return combined_entries

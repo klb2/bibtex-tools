@@ -9,7 +9,7 @@ from .util import load_bib_file, write_bib_database
 from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
                     KEY_MONTH, KEY_PAGES, KEY_TITLE, KEY_YEAR, KEYS_JOURNAL,
                     KEY_ENTRYTYPE, KEY_BOOKTITLE)
-from .clean_bib_file import has_duplicates, replace_duplicates
+from .clean_bib_file import has_duplicates, replace_duplicate_ids
 
 def getnames(names):
     """This function is a slight modification of the function from bibtexparser
@@ -232,5 +232,5 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
             entry = abbreviate_journalname(entry)
         _clean_entries.append(entry)
     if replace_ids:
-        _clean_entries = replace_duplicates(_clean_entries)
+        _clean_entries = replace_duplicate_ids(_clean_entries)
     return _clean_entries

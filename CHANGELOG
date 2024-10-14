@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added `KEY_EDITOR` and `KEY_BOOKTITLE` keywords to constants
 
+### Changed
+- Rename the `clean_bib_file.get_duplicates` function to
+  `clean_bib_file.get_duplicate_ids`.
+- Rename the `clean_bib_file.replace_duplicates` function to
+  `clean_bib_file.replace_duplicate_ids`.
+
 
 ## [0.4.0] - 2024-02-14
 ### Added

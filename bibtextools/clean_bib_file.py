@@ -44,13 +44,13 @@ def has_duplicates(bib_database):
 
 # https://stackoverflow.com/a/9836685
 @cleaning_function(on_all_entries=True)
-def get_duplicates(entries):
+def get_duplicate_ids(entries):
     list_ids = [x[KEY_ID] for x in entries]
     return set([x for x in list_ids if list_ids.count(x) > 1])
 
 @cleaning_function(on_all_entries=True)
-def replace_duplicates(entries, return_dupl=False):
-    duplicates = {k: 0 for k in get_duplicates(entries)}
+def replace_duplicate_ids(entries, return_dupl=False):
+    duplicates = {k: 0 for k in get_duplicate_ids(entries)}
     for entry in entries:
         _id = entry[KEY_ID]
         if _id in duplicates:
@@ -96,8 +96,8 @@ def clean_bib_file_main(bib_file, abbr_file=None, remove_fields=None,
         logger.info("Using the following abbreviation file: %s", abbr_file)
     bib_database = load_bib_file(bib_file, abbr=abbr_file, encoding=encoding)
     logger.debug("Loaded file and replaced abbreviation strings")
-    clean_entries, duplicates = replace_duplicates(bib_database,
-                                                   return_dupl=True)
+    clean_entries, duplicates = replace_duplicate_ids(bib_database,
+                                                      return_dupl=True)
     logger.info("Replaced %d duplicates", len(duplicates))
     logger.debug("The following duplicates were found: %s", duplicates)
     if remove_fields is not None:
