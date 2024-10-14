@@ -9,7 +9,7 @@ from .util import load_bib_file, write_bib_database, getnames
 from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
                     KEY_MONTH, KEY_PAGES, KEY_TITLE, KEY_YEAR, KEYS_JOURNAL,
                     KEY_ENTRYTYPE, KEY_BOOKTITLE)
-from .clean_bib_file import has_duplicates, replace_duplicate_ids
+from .clean_bib_file import has_duplicates, replace_duplicate_ids, remove_duplicate_entries
 
 
 def clean_month(month, **kwargs):
@@ -146,8 +146,8 @@ def abbreviate_journalname(entry):
     return entry
 
 def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
-                       arxiv=False, iso4=False, verbose=logging.WARN,
-                       encoding='utf-8', **kwargs):
+                       force=False, arxiv=False, iso4=False,
+                       verbose=logging.WARN, encoding='utf-8', **kwargs):
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('modernize_bib_file')
     logger.setLevel(verbose)
@@ -159,11 +159,13 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
 
     bib_database = load_bib_file(bib_file, encoding=encoding)
     logger.debug("Successfully loaded bib file")
-    if has_duplicates(bib_database):
-        logger.warn("The loaded bib-file has duplicates (same ID for multiple entries). Consider running this script with the --replace_ids option to get automatically rename them.")
+    bib_database = remove_duplicate_entries(bib_database, force=force)
+    logger.debug("Successfully removed duplicates")
+    #if has_duplicates(bib_database):
+    #    logger.warning("The loaded bib-file has duplicates (same ID for multiple entries). Consider running this script with the --replace_ids option to get automatically rename them.")
 
     _clean_entries = []
-    for entry in bib_database.get_entry_list():
+    for entry in bib_database:
         logger.info("Working on entry: %s", entry.get(KEY_ID))
         for _key, _clean_func in CLEAN_FUNC.items():
             _value = entry.get(_key)

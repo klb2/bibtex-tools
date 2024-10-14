@@ -99,7 +99,7 @@ def get_duplicate_entries(entries):
             for _key in KEYS_JOURNAL:
                 _journal2 = _entry2.get(_key, "")
                 if _journal2: break
-            _same_misc = SequenceMatcher(None, _journal1, _journal2).ratio() > .5
+            _same_misc = SequenceMatcher(None, _journal1, _journal2).ratio() > .7
             if KEY_PAGES in _entry1 and KEY_PAGES in _entry2:
                 _same_misc = _same_misc and (SequenceMatcher(None, _entry1[KEY_PAGES], _entry2[KEY_PAGES]).ratio() >= .75)
         if not _same_misc:
@@ -128,7 +128,7 @@ def remove_duplicate_entries(entries, force=False):
             entries.remove(_pair[_idx_entry_delete])
         duplicates = get_duplicate_entries(entries)
         logger.info("%d duplicate pairs remaining...", len(duplicates))
-    return entries, duplicates
+    return entries
 
 def remove_fields_from_entry(entry, remove_fields=None):
     if remove_fields is None:
@@ -164,8 +164,8 @@ def clean_bib_file_main(bib_file, abbr_file=None, remove_fields=None,
         logger.info("Using the following abbreviation file: %s", abbr_file)
     bib_database = load_bib_file(bib_file, abbr=abbr_file, encoding=encoding)
     logger.debug("Loaded file and replaced abbreviation strings")
-    bib_database, duplicates = remove_duplicate_entries(bib_database, force=force)
-    logger.debug("Removed %d duplicate entries", len(duplicates))
+    bib_database = remove_duplicate_entries(bib_database, force=force)
+    logger.debug("Successfully removed duplicates")
     clean_entries, duplicates = replace_duplicate_ids(bib_database,
                                                       return_dupl=True)
     logger.info("Replaced %d duplicate ids", len(duplicates))

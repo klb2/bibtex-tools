@@ -17,21 +17,25 @@ def test_combine_databases(entry_list):
     assert len(combined_entries) == 9
 
 def test_combine_main_len():
-    combined_entries = combine_bib_files.combine_bib_files_main(BIB_FILES)
-    assert len(combined_entries) == 9
+    combined_entries = combine_bib_files.combine_bib_files_main(BIB_FILES,
+                                                                force=True)
+    assert len(combined_entries) == 8
 
 def test_combine_main_allow_duplicates():
     combined_entries = combine_bib_files.combine_bib_files_main(BIB_FILES,
-                                                                allow_duplicates=True)
+                                                                allow_duplicates=True,
+                                                                force=True)
     combined_ids = set([x[KEY_ID] for x in combined_entries])
-    assert (len(combined_entries) == 9 and
+    print(combined_ids)
+    assert (len(combined_entries) == 8 and
             combined_ids == {"Author2020", "KEY", "RemoveFields", "Cesar2013",
                              "Author1970", "Author2020duplicate"})
 
 def test_combine_main_replace_duplicates():
     combined_entries = combine_bib_files.combine_bib_files_main(BIB_FILES,
-                                                                allow_duplicates=False)
+                                                                allow_duplicates=False,
+                                                                force=True)
     combined_ids = set([x[KEY_ID] for x in combined_entries])
-    assert combined_ids == {"Author2020:a","Author2020:b","Author2020:c",
-                            "KEY:a","KEY:b", "RemoveFields", "Cesar2013",
+    assert combined_ids == {"Author2020:a", "Author2020:b",
+                            "KEY:a", "KEY:b", "RemoveFields", "Cesar2013",
                             "Author1970", "Author2020duplicate"}
