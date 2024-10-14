@@ -4,6 +4,7 @@ import bibtexparser
 from bibtexparser.bparser import BibTexParser
 
 from bibtextools import modernize_bib_file
+from bibtextools.const import KEY_ENTRYTYPE
 
 
 BIB_MAIN = "old.bib"
@@ -131,7 +132,20 @@ def test_title_shielding(title, expected):
 ("Norsk Militært Tidsskrift", "Nor. Mil. Tidsskr."),
                           ])
 def test_journal_abbreviation(title, expected):
-    entry = {"journal": title}
+    entry = {"journal": title, KEY_ENTRYTYPE: "article"}
+    entry = modernize_bib_file.abbreviate_journalname(entry)
+    abbr_title = entry['journal']
+    assert abbr_title == expected
+
+@pytest.mark.parametrize("title,expected",
+                         [
+("J. Polym. Sci. A", "J. Polym. Sci. A"),
+("Proc. Inst. Mech. Eng. A", "Proc. Inst. Mech. Eng. A"),
+("Nor. Mil. Tidsskr.", "Nor. Mil. Tidsskr."),
+("IEEE Trans. on Wireless Communications", "IEEE Trans. Wirel. Commun."),
+                          ])
+def test_existing_journal_abbreviation(title, expected):
+    entry = {"journal": title, KEY_ENTRYTYPE: "article"}
     entry = modernize_bib_file.abbreviate_journalname(entry)
     abbr_title = entry['journal']
     assert abbr_title == expected
