@@ -7,7 +7,8 @@ from pyiso4.ltwa import Abbreviate
 
 from .util import load_bib_file, write_bib_database
 from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
-                    KEY_MONTH, KEY_PAGES, KEY_TITLE, KEY_YEAR, KEYS_JOURNAL)
+                    KEY_MONTH, KEY_PAGES, KEY_TITLE, KEY_YEAR, KEYS_JOURNAL,
+                    KEY_ENTRYTYPE, KEY_BOOKTITLE)
 from .clean_bib_file import has_duplicates, replace_duplicates
 
 def getnames(names):
@@ -173,6 +174,11 @@ def get_arxiv_category(eprint):
 def abbreviate_journalname(entry):
     entry = entry.copy()
     abbreviator = Abbreviate.create()
+    if entry[KEY_ENTRYTYPE] == "inproceedings":
+        conf = entry.get(KEY_BOOKTITLE, False)
+        if conf:
+            conf_abbr = abbreviator(conf)
+            entry[KEY_BOOKTITLE] = conf_abbr
     for _key in KEYS_JOURNAL:
         journal = entry.get(_key, False)
         if not journal:
