@@ -4,6 +4,7 @@ import functools
 import re
 import itertools
 from difflib import SequenceMatcher
+from pprint import pprint
 
 from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.customization import string_to_latex, convert_to_unicode
@@ -90,7 +91,7 @@ def get_duplicate_entries(entries):
         _same_misc = True
         if _entry1[KEY_ENTRYTYPE] == "inproceedings":
             _same_misc = _same_misc and (_entry1.get(KEY_YEAR, "") == _entry2.get(KEY_YEAR, ""))
-            _same_misc = _same_misc and (SequenceMatcher(None, _entry1.get(KEY_BOOKTITLE, ""), _entry2.get(KEY_BOOKTITLE, "")).ratio() > .8)
+            _same_misc = _same_misc and (SequenceMatcher(None, _entry1.get(KEY_BOOKTITLE, ""), _entry2.get(KEY_BOOKTITLE, "")).ratio() > .7)
         elif _entry1[KEY_ENTRYTYPE] == "article":
             for _key in KEYS_JOURNAL:
                 _journal1 = _entry1.get(_key, "")
@@ -105,6 +106,29 @@ def get_duplicate_entries(entries):
             continue
         duplicates.append((_entry1, _entry2))
     return duplicates
+
+@cleaning_function(on_all_entries=True)
+def remove_duplicate_entries(entries, force=False):
+    logger = logging.getLogger('remove_duplicate_entries')
+    duplicates = get_duplicate_entries(entries)
+    logger.warning("Found %d duplicate pairs", len(duplicates))
+    while duplicates:
+        _pair = duplicates[0]
+        if force:
+            logger.info("Due to force argument, deleting the entry with less fields, without asking")
+            entries.remove(sorted(_pair, key=len)[0])
+        else:
+            logger.warning("Pair of duplicate entries:")
+            logger.warning("Entry 1:")
+            pprint(_pair[0])
+            logger.warning("Entry 2:")
+            pprint(_pair[1])
+            _idx_entry_delete = input("Which entry do you want to REMOVE? Type 1 or 2 and hit enter.\n")
+            _idx_entry_delete = int(_idx_entry_delete) - 1
+            entries.remove(_pair[_idx_entry_delete])
+        duplicates = get_duplicate_entries(entries)
+        logger.info("%d duplicate pairs remaining...", len(duplicates))
+    return entries, duplicates
 
 def remove_fields_from_entry(entry, remove_fields=None):
     if remove_fields is None:
@@ -130,7 +154,7 @@ def replace_unicode_in_entry(entry):
 replace_unicode_in_database = cleaning_function()(replace_unicode_in_entry)
 
 def clean_bib_file_main(bib_file, abbr_file=None, remove_fields=None,
-                        encoding="utf-8", verbose=logging.WARN, 
+                        encoding="utf-8", force=False, verbose=logging.WARN, 
                         replace_unicode=False):
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('clean_bib_file')
@@ -140,9 +164,11 @@ def clean_bib_file_main(bib_file, abbr_file=None, remove_fields=None,
         logger.info("Using the following abbreviation file: %s", abbr_file)
     bib_database = load_bib_file(bib_file, abbr=abbr_file, encoding=encoding)
     logger.debug("Loaded file and replaced abbreviation strings")
+    bib_database, duplicates = remove_duplicate_entries(bib_database, force=force)
+    logger.debug("Removed %d duplicate entries", len(duplicates))
     clean_entries, duplicates = replace_duplicate_ids(bib_database,
                                                       return_dupl=True)
-    logger.info("Replaced %d duplicates", len(duplicates))
+    logger.info("Replaced %d duplicate ids", len(duplicates))
     logger.debug("The following duplicates were found: %s", duplicates)
     if remove_fields is not None:
         logger.info("Removing fields: %s", remove_fields)
