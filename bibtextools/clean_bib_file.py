@@ -76,9 +76,9 @@ def get_duplicate_entries(entries):
         _title_ratio = seq_matcher_title.ratio()
         if _title_ratio < .8:
             continue
-        print('---')
-        print(f"T1: {_entry1[KEY_TITLE]}\nT2: {_entry2[KEY_TITLE]}")
-        print(f"Ratio: {_title_ratio}")
+        #print('---')
+        #print(f"T1: {_entry1[KEY_TITLE]}\nT2: {_entry2[KEY_TITLE]}")
+        #print(f"Ratio: {_title_ratio}")
         _authors1 = getnames([i.strip() for i in _entry1[KEY_AUTHOR].replace('\n', ' ').split(" and ")])
         _authors1 = " and ".join(_authors1)
         _authors2 = getnames([i.strip() for i in _entry2[KEY_AUTHOR].replace('\n', ' ').split(" and ")])
@@ -89,7 +89,7 @@ def get_duplicate_entries(entries):
             continue
         _same_misc = True
         if _entry1[KEY_ENTRYTYPE] == "inproceedings":
-            _same_misc = _same_misc and (_entry1[KEY_YEAR] == _entry2[KEY_YEAR])
+            _same_misc = _same_misc and (_entry1.get(KEY_YEAR, "") == _entry2.get(KEY_YEAR, ""))
             _same_misc = _same_misc and (SequenceMatcher(None, _entry1.get(KEY_BOOKTITLE, ""), _entry2.get(KEY_BOOKTITLE, "")).ratio() > .8)
         elif _entry1[KEY_ENTRYTYPE] == "article":
             for _key in KEYS_JOURNAL:
@@ -99,7 +99,8 @@ def get_duplicate_entries(entries):
                 _journal2 = _entry2.get(_key, "")
                 if _journal2: break
             _same_misc = SequenceMatcher(None, _journal1, _journal2).ratio() > .5
-            _same_misc = _same_misc and (SequenceMatcher(None, _entry1[KEY_PAGES], _entry2[KEY_PAGES]).ratio() >= .75)
+            if KEY_PAGES in _entry1 and KEY_PAGES in _entry2:
+                _same_misc = _same_misc and (SequenceMatcher(None, _entry1[KEY_PAGES], _entry2[KEY_PAGES]).ratio() >= .75)
         if not _same_misc:
             continue
         duplicates.append((_entry1, _entry2))
