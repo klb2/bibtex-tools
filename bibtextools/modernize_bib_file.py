@@ -5,52 +5,11 @@ import feedparser
 from bibtexparser.customization import string_to_latex#, getnames
 from pyiso4.ltwa import Abbreviate
 
-from .util import load_bib_file, write_bib_database
+from .util import load_bib_file, write_bib_database, getnames
 from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
-                    KEY_MONTH, KEY_PAGES, KEY_TITLE, KEY_YEAR, KEYS_JOURNAL)
-from .clean_bib_file import has_duplicates, replace_duplicates
-
-def getnames(names):
-    """This function is a slight modification of the function from bibtexparser
-    `bibtexparser.customization.getnames`.
-    """
-    tidynames = []
-    for namestring in names:
-        namestring = namestring.strip()
-        if len(namestring) < 1:
-            continue
-        if ',' in namestring:
-            namesplit = namestring.split(',', 1)
-            last = namesplit[0].strip()
-            firsts = [i.strip() for i in namesplit[1].split()]
-        elif namestring[0] == "{" and namestring[-1] == "}":
-            tidynames.append(namestring)
-            continue
-        else:
-            #shielded_names = re.findall(r'[{].*?[}]', namestring)
-            shielded_names = re.findall(r'(\s|^)([{].*?[}])', namestring)
-            if shielded_names:
-                last = shielded_names.pop()
-                last = last[1]
-                if namestring.endswith(last):
-                    firsts = namestring[:-len(last)].split()
-                else:
-                    firsts = [last]
-                    last = namestring[len(last):] #removeprefix in Python 3.9+
-            else:
-                namesplit = namestring.split()
-                last = namesplit.pop()
-                firsts = [i.replace('.', '. ').strip() for i in namesplit]
-        if last in ['jnr', 'jr', 'junior']:
-            last = firsts.pop()
-        for item in firsts:
-            if item in ['ben', 'van', 'der', 'de', 'la', 'le']:
-                last = firsts.pop() + ' ' + last
-        if not firsts:
-            tidynames.append(last)
-        else:
-            tidynames.append(last + ", " + ' '.join(firsts))
-    return tidynames
+                    KEY_MONTH, KEY_PAGES, KEY_TITLE, KEY_YEAR, KEYS_JOURNAL,
+                    KEY_ENTRYTYPE, KEY_BOOKTITLE)
+from .clean_bib_file import has_duplicates, replace_duplicate_ids, remove_duplicate_entries
 
 
 def clean_month(month, **kwargs):
@@ -173,6 +132,11 @@ def get_arxiv_category(eprint):
 def abbreviate_journalname(entry):
     entry = entry.copy()
     abbreviator = Abbreviate.create()
+    if entry[KEY_ENTRYTYPE] == "inproceedings":
+        conf = entry.get(KEY_BOOKTITLE, False)
+        if conf:
+            conf_abbr = abbreviator(conf)
+            entry[KEY_BOOKTITLE] = conf_abbr
     for _key in KEYS_JOURNAL:
         journal = entry.get(_key, False)
         if not journal:
@@ -182,8 +146,8 @@ def abbreviate_journalname(entry):
     return entry
 
 def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
-                       arxiv=False, iso4=False, verbose=logging.WARN,
-                       encoding='utf-8', **kwargs):
+                       force=False, arxiv=False, iso4=False,
+                       verbose=logging.WARN, encoding='utf-8', **kwargs):
     logging.basicConfig(format="%(asctime)s - [%(levelname)8s]: %(message)s")
     logger = logging.getLogger('modernize_bib_file')
     logger.setLevel(verbose)
@@ -195,11 +159,13 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
 
     bib_database = load_bib_file(bib_file, encoding=encoding)
     logger.debug("Successfully loaded bib file")
-    if has_duplicates(bib_database):
-        logger.warn("The loaded bib-file has duplicates (same ID for multiple entries). Consider running this script with the --replace_ids option to get automatically rename them.")
+    bib_database = remove_duplicate_entries(bib_database, force=force)
+    logger.debug("Successfully removed duplicates")
+    #if has_duplicates(bib_database):
+    #    logger.warning("The loaded bib-file has duplicates (same ID for multiple entries). Consider running this script with the --replace_ids option to get automatically rename them.")
 
     _clean_entries = []
-    for entry in bib_database.get_entry_list():
+    for entry in bib_database:
         logger.info("Working on entry: %s", entry.get(KEY_ID))
         for _key, _clean_func in CLEAN_FUNC.items():
             _value = entry.get(_key)
@@ -226,5 +192,5 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
             entry = abbreviate_journalname(entry)
         _clean_entries.append(entry)
     if replace_ids:
-        _clean_entries = replace_duplicates(_clean_entries)
+        _clean_entries = replace_duplicate_ids(_clean_entries)
     return _clean_entries
