@@ -6,13 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 ### Added
-- Added `KEY_EDITOR` and `KEY_BOOKTITLE` keywords to constants
+- Add `KEY_EDITOR` and `KEY_BOOKTITLE` keywords to constants
+- Add `clean_bib_file.get_duplicate_entries` function that returns duplicate
+  entries based on their similar titles, authors, and other information
 
 ### Changed
 - Rename the `clean_bib_file.get_duplicates` function to
   `clean_bib_file.get_duplicate_ids`.
 - Rename the `clean_bib_file.replace_duplicates` function to
   `clean_bib_file.replace_duplicate_ids`.
+- Move `modernize_bib_file.getnames()` to `util.getnames()`
 
 
 ## [0.4.0] - 2024-02-14

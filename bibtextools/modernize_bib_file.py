@@ -5,53 +5,11 @@ import feedparser
 from bibtexparser.customization import string_to_latex#, getnames
 from pyiso4.ltwa import Abbreviate
 
-from .util import load_bib_file, write_bib_database
+from .util import load_bib_file, write_bib_database, getnames
 from .const import (KEY_ARCHIVE, KEY_AUTHOR, KEY_CATEGORY, KEY_EPRINT, KEY_ID,
                     KEY_MONTH, KEY_PAGES, KEY_TITLE, KEY_YEAR, KEYS_JOURNAL,
                     KEY_ENTRYTYPE, KEY_BOOKTITLE)
 from .clean_bib_file import has_duplicates, replace_duplicate_ids
-
-def getnames(names):
-    """This function is a slight modification of the function from bibtexparser
-    `bibtexparser.customization.getnames`.
-    """
-    tidynames = []
-    for namestring in names:
-        namestring = namestring.strip()
-        if len(namestring) < 1:
-            continue
-        if ',' in namestring:
-            namesplit = namestring.split(',', 1)
-            last = namesplit[0].strip()
-            firsts = [i.strip() for i in namesplit[1].split()]
-        elif namestring[0] == "{" and namestring[-1] == "}":
-            tidynames.append(namestring)
-            continue
-        else:
-            #shielded_names = re.findall(r'[{].*?[}]', namestring)
-            shielded_names = re.findall(r'(\s|^)([{].*?[}])', namestring)
-            if shielded_names:
-                last = shielded_names.pop()
-                last = last[1]
-                if namestring.endswith(last):
-                    firsts = namestring[:-len(last)].split()
-                else:
-                    firsts = [last]
-                    last = namestring[len(last):] #removeprefix in Python 3.9+
-            else:
-                namesplit = namestring.split()
-                last = namesplit.pop()
-                firsts = [i.replace('.', '. ').strip() for i in namesplit]
-        if last in ['jnr', 'jr', 'junior']:
-            last = firsts.pop()
-        for item in firsts:
-            if item in ['ben', 'van', 'der', 'de', 'la', 'le']:
-                last = firsts.pop() + ' ' + last
-        if not firsts:
-            tidynames.append(last)
-        else:
-            tidynames.append(last + ", " + ' '.join(firsts))
-    return tidynames
 
 
 def clean_month(month, **kwargs):
