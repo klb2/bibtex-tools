@@ -4,6 +4,7 @@ from bibtextools.const import KEY_ID
 
 DIRTY = "duplicates.bib"
 UNICODE = "unicode.bib"
+DUPLICATE_CONTENT = "duplicate_content.bib"
 
 def test_duplicate_check():
     bib_database = load_bib_file(DIRTY)
@@ -59,3 +60,8 @@ def test_not_replace_converted_unicode():
     assert ((clean_entry['author'] == r"Bj{\"o}rn Author") and
             (clean_entry["journal"] == r'With 6$\times$6 math expressions') and
             (clean_entry['pages'] == r'12 \& 13'))
+
+def test_get_duplicate_entries_number():
+    bib_database = clean_bib_file.load_bib_file(DUPLICATE_CONTENT)
+    results = clean_bib_file.get_duplicate_entries(bib_database)
+    assert len(results) == 2
