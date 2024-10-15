@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.5.0] - 2024-10-15
 ### Added
 - Add `KEY_EDITOR` and `KEY_BOOKTITLE` keywords to constants
 - Add `clean_bib_file.get_duplicate_entries` function that returns duplicate
@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Rename the `clean_bib_file.replace_duplicates` function to
   `clean_bib_file.replace_duplicate_ids`.
 - Move `modernize_bib_file.getnames()` to `util.getnames()`
+
 
 
 ## [0.4.0] - 2024-02-14
