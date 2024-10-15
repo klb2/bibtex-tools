@@ -159,7 +159,7 @@ def modernize_bib_main(bib_file, remove_fields=None, replace_ids=False,
 
     bib_database = load_bib_file(bib_file, encoding=encoding)
     logger.debug("Successfully loaded bib file")
-    bib_database = remove_duplicate_entries(bib_database, force=force)
+    bib_database = remove_duplicate_entries(bib_database, force=force, verbose=verbose)
     logger.debug("Successfully removed duplicates")
     #if has_duplicates(bib_database):
     #    logger.warning("The loaded bib-file has duplicates (same ID for multiple entries). Consider running this script with the --replace_ids option to get automatically rename them.")

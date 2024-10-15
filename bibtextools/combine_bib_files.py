@@ -28,7 +28,7 @@ def combine_bib_files_main(bib_files, allow_duplicates=False, force=False,
     bib_databases = [load_bib_file(_bib_file, abbr=None, encoding=encoding)
                      for _bib_file in bib_files]
     combined_entries = combine_bib_entries(bib_databases)
-    combined_entries = remove_duplicate_entries(combined_entries, force=force)
+    combined_entries = remove_duplicate_entries(combined_entries, force=force, verbose=verbose)
     logger.debug("Successfully removed duplicates")
     #if replace_ids:
     #    combined_entries = #TODO: Adjust modernize function to support lists as input

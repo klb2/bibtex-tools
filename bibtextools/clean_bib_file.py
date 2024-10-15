@@ -108,24 +108,33 @@ def get_duplicate_entries(entries):
     return duplicates
 
 @cleaning_function(on_all_entries=True)
-def remove_duplicate_entries(entries, force=False):
+def remove_duplicate_entries(entries, force=False, verbose=logging.WARN):
     logger = logging.getLogger('remove_duplicate_entries')
+    logger.setLevel(verbose)
     duplicates = get_duplicate_entries(entries)
-    logger.warning("Found %d duplicate pairs", len(duplicates))
+    if duplicates:
+        logger.warning("Found %d duplicate pairs", len(duplicates))
+    else:
+        logger.info("No duplicate citations found.")
     while duplicates:
         _pair = duplicates[0]
+        _shorter_entry = sorted(_pair, key=len)[0]
         if force:
-            logger.info("Due to force argument, deleting the entry with less fields, without asking")
-            entries.remove(sorted(_pair, key=len)[0])
+            logger.info("Due to --force argument, deleting the entry with less fields (without asking)...")
+            entries.remove(_shorter_entry)
         else:
             logger.warning("Pair of duplicate entries:")
             logger.warning("Entry 1:")
             pprint(_pair[0])
             logger.warning("Entry 2:")
             pprint(_pair[1])
-            _idx_entry_delete = input("Which entry do you want to REMOVE? Type 1 or 2 and hit enter.\n")
-            _idx_entry_delete = int(_idx_entry_delete) - 1
-            entries.remove(_pair[_idx_entry_delete])
+            _idx_entry_delete = input("Which entry do you want to REMOVE? Type 1 or 2 and hit enter. Simply hitting enter will remove the shorter entry.\n")
+            try:
+                _idx_entry_delete = int(_idx_entry_delete) - 1
+                entries.remove(_pair[_idx_entry_delete])
+            except ValueError:
+                entries.remove(_shorter_entry)
+        logger.info("Successfully removed duplicate entry.")
         duplicates = get_duplicate_entries(entries)
         logger.info("%d duplicate pairs remaining...", len(duplicates))
     return entries
@@ -164,7 +173,7 @@ def clean_bib_file_main(bib_file, abbr_file=None, remove_fields=None,
         logger.info("Using the following abbreviation file: %s", abbr_file)
     bib_database = load_bib_file(bib_file, abbr=abbr_file, encoding=encoding)
     logger.debug("Loaded file and replaced abbreviation strings")
-    bib_database = remove_duplicate_entries(bib_database, force=force)
+    bib_database = remove_duplicate_entries(bib_database, force=force, verbose=verbose)
     logger.debug("Successfully removed duplicates")
     clean_entries, duplicates = replace_duplicate_ids(bib_database,
                                                       return_dupl=True)
