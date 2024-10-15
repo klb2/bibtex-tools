@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add `clean_bib_file.remove_duplicate_entries` function that removes duplicate
   entries based on the content (similar titles, authors, ...). Additionally,
   this function is applied to all main functions after loading the bib files.
+- Add new `--force` option for the CLI commands, which skip the interactive
+  prompt for removing duplicate citations.
 
 ### Changed
 - Rename the `clean_bib_file.get_duplicates` function to
