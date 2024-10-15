@@ -21,7 +21,7 @@ classifiers = [
 	"Topic :: Scientific/Engineering"
 ]
 dependencies = [
-  "bibtexparser",
+  "bibtexparser<2",
   "feedparser",
   "click",
   "pyiso4>=0.1.3"
@@ -33,7 +33,8 @@ test = [
 ]
 
 [project.urls]
-Repository = 'https://github.com/klb2/bibtex-tools'
+Repository = 'https://github.com/klb2/bibtex-tools.git'
+Changelog = 'https://github.com/klb2/bibtex-tools/blob/master/CHANGELOG.md'
 
 [project.scripts]
 bibtex-tools = "bibtextools.__main__:main"
