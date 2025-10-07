@@ -117,7 +117,8 @@ def remove_duplicate_entries(entries, force=False, verbose=logging.WARN):
     else:
         logger.info("No duplicate citations found.")
     while duplicates:
-        _pair = duplicates[0]
+        #_pair = duplicates[0]
+        _pair = duplicates.pop(0)
         _shorter_entry = sorted(_pair, key=len)[0]
         if force:
             logger.info("Due to --force argument, deleting the entry with less fields (without asking)...")
@@ -128,7 +129,9 @@ def remove_duplicate_entries(entries, force=False, verbose=logging.WARN):
             pprint(_pair[0])
             logger.warning("Entry 2:")
             pprint(_pair[1])
-            _idx_entry_delete = input("Which entry do you want to REMOVE? Type 1 or 2 and hit enter. Simply hitting enter will remove the shorter entry.\n")
+            _idx_entry_delete = input("Which entry do you want to REMOVE? Type 1 or 2 and hit enter. Simply hitting enter will remove the shorter entry. Type 0 for not deleting any entry.\n")
+            if int(_idx_entry_delete) == 0:
+                continue
             try:
                 _idx_entry_delete = int(_idx_entry_delete) - 1
                 entries.remove(_pair[_idx_entry_delete])

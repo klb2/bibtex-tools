@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Added
+- In the removal of duplicate entries, typing `0` will continue the process
+  without deletig any of the two entries.
+
 ## [0.5.0] - 2024-10-15
 ### Added
 - Add `KEY_EDITOR` and `KEY_BOOKTITLE` keywords to constants
