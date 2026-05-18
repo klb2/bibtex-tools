@@ -2,6 +2,7 @@ import os.path
 import argparse
 import logging
 
+from . import __version__
 from .modernize_bib_file import modernize_bib_main
 from .clean_bib_file import clean_bib_file_main
 from .combine_bib_files import combine_bib_files_main
@@ -26,6 +27,7 @@ def get_arg_parser():
     subparsers = parser.add_subparsers(
         help="Possible sub commands", required=True, dest="command"
     )
+    parser.add_argument("--version", action="version", version=__version__)
     parser_modern = subparsers.add_parser(
         "modernize",
         help="Modernize a bib file. This replaces fields by the proper BibLaTeX syntax and removes unwanted fields. It also does some cleaning steps",
