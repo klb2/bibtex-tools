@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 ### Added
 - In the removal of duplicate entries, typing `0` will continue the process
-  without deletig any of the two entries.
+  without deleting any of the two entries.
 
 ## [0.5.0] - 2024-10-15
 ### Added
