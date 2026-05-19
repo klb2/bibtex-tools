@@ -50,6 +50,11 @@ def get_arg_parser():
         help="If this is set, the primaryClasses are downloaded for arXiv preprints. Requires an eprint field in the entry",
     )
     parser_modern.add_argument(
+        "--doi",
+        action="store_true",
+        help="If this is set, the DOI of the paper will be fetched from Crossref. Only works for article and inproceeding entries.",
+    )
+    parser_modern.add_argument(
         "--shield_title",
         action="store_true",
         help="If this is set, the title field will be surrounded by curly brackets.",

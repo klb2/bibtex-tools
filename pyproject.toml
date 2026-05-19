@@ -24,7 +24,8 @@ dependencies = [
   "bibtexparser<2",
   "feedparser",
   "click",
-  "pyiso4>=0.1.3"
+  "pyiso4>=0.1.3",
+  "requests"
 ]
 
 [project.optional-dependencies]

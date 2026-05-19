@@ -1,7 +1,6 @@
 import logging
 import re
 
-import feedparser
 from bibtexparser.customization import string_to_latex  # , getnames
 from pyiso4.ltwa import Abbreviate
 
@@ -19,12 +18,14 @@ from .const import (
     KEYS_JOURNAL,
     KEY_ENTRYTYPE,
     KEY_BOOKTITLE,
+    KEY_DOI,
 )
 from .clean_bib_file import (
     has_duplicates,
     replace_duplicate_ids,
     remove_duplicate_entries,
 )
+from .fetch_info import get_arxiv_category, get_doi
 
 
 def clean_month(month, **kwargs):
@@ -142,27 +143,6 @@ def replace_bib_id(entry):
     return new_id
 
 
-def get_arxiv_category(eprint):
-    base_url = "http://export.arxiv.org/api/query?"
-    search_query = {
-        "id_list": eprint,
-    }
-    query = "&".join(["{}={}".format(k, v) for k, v in search_query.items()])
-    feed = feedparser.parse(base_url + query)
-    entries = feed["entries"]
-    if len(entries) != 1:
-        return None
-    # a_id = entries[0]["id"].split('/abs/')[-1]
-    try:
-        primary_class = entries[0]["arxiv_primary_category"]["term"]
-    except KeyError:
-        return None
-    if primary_class == "":
-        return None
-    else:
-        return primary_class
-
-
 def abbreviate_journalname(entry):
     entry = entry.copy()
     abbreviator = Abbreviate.create()
@@ -187,6 +167,7 @@ def modernize_bib_main(
     force=False,
     arxiv=False,
     iso4=False,
+    doi=False,
     verbose=logging.WARN,
     encoding="utf-8",
     **kwargs,
@@ -227,6 +208,18 @@ def modernize_bib_main(
                     logging.debug(
                         "Primary category successfully changed to: %s", _primary_class
                     )
+        if doi and entry[KEY_ENTRYTYPE] in ["article", "inproceedings"]:
+            doi_entry = entry.get(KEY_DOI)
+            if doi_entry is None:
+                logging.debug("Retrieving DOI")
+                try:
+                    _doi = get_doi(entry)
+                    entry[KEY_DOI] = _doi
+                    logging.debug("Found DOI: %s", _doi)
+                except:
+                    logging.warning("No DOI found.")
+            else:
+                logging.debug("Entry already has a DOI")
         for _field in remove_fields:
             logger.debug("Removing field: %s", _field)
             entry.pop(_field, None)

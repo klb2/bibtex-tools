@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - In the removal of duplicate entries, typing `0` will continue the process
   without deleting any of the two entries.
+- Add new `--version` command-line argument to print the version and exit
+- Add new `--doi` option to the `modernize` command, which allows fetching DOIs
+  for journal and conference articles using the Crossref API.
 
 ## [0.5.0] - 2024-10-15
 ### Added

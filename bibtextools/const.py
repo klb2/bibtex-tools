@@ -11,3 +11,4 @@ KEY_ENTRYTYPE = "ENTRYTYPE"
 KEYS_JOURNAL = ["journal", "journaltitle"]
 KEY_BOOKTITLE = "booktitle"
 KEY_EDITOR = "editor"
+KEY_DOI = "doi"
