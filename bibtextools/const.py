@@ -14,3 +14,4 @@ KEY_EDITOR = "editor"
 KEY_DATE = "date"
 KEY_DOI = "doi"
 KEY_ISBN = "isbn"
+KEYS_REFERENCE = ["crossref", "xref", "xdata", "related", "entryset"]
