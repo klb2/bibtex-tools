@@ -36,6 +36,6 @@ def test_combine_main_replace_duplicates():
                                                                 allow_duplicates=False,
                                                                 force=True)
     combined_ids = set([x[KEY_ID] for x in combined_entries])
-    assert combined_ids == {"Author2020:a", "Author2020:b",
-                            "KEY:a", "KEY:b", "RemoveFields", "Cesar2013",
+    assert combined_ids == {"Author2020", "Author2020:b",
+                            "KEY", "KEY:b", "RemoveFields", "Cesar2013",
                             "Author1970", "Author2020duplicate"}

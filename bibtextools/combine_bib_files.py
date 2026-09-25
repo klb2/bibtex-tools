@@ -33,5 +33,9 @@ def combine_bib_files_main(bib_files, allow_duplicates=False, force=False,
     #if replace_ids:
     #    combined_entries = #TODO: Adjust modernize function to support lists as input
     if not allow_duplicates:
-        combined_entries = replace_duplicate_ids(combined_entries)
+        combined_entries, duplicates = replace_duplicate_ids(combined_entries,
+                                                             return_dupl=True)
+        if duplicates:
+            logger.warning("Renamed entries with duplicate IDs (the first "
+                           "entry keeps its ID): %s", ", ".join(duplicates))
     return combined_entries

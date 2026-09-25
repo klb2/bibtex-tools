@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   without deletig any of the two entries. A skipped pair is not asked about
   again.
 
+### Changed
+- When renaming duplicate IDs in `clean` and `combine`, the first entry keeps
+  its ID, e.g., `key` and `key:b` instead of `key:a` and `key:b`. BibTeX and
+  biber use the first entry as well, so citations of `key` keep working. New
+  IDs no longer collide with existing ones, and the renamed IDs are shown as a
+  warning.
+
 ### Fixed
 - Invalid input in the interactive prompt for removing duplicate entries (in
   all commands), e.g., `3`, no longer crashes the program. The prompt is

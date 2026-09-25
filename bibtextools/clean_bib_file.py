@@ -54,11 +54,20 @@ def get_duplicate_ids(entries):
 @cleaning_function(on_all_entries=True)
 def replace_duplicate_ids(entries, return_dupl=False):
     duplicates = {k: 0 for k in get_duplicate_ids(entries)}
+    used_ids = set([x[KEY_ID] for x in entries])
     for entry in entries:
         _id = entry[KEY_ID]
         if _id in duplicates:
             duplicates[_id] += 1
-            _id = "{}:{}".format(_id, chr(ord('`')+duplicates[_id]))
+            # The first entry keeps its ID, since BibTeX and biber also use
+            # the first entry for a duplicate ID.
+            if duplicates[_id] == 1:
+                continue
+            _letter = ord('`') + duplicates[_id]
+            while "{}:{}".format(_id, chr(_letter)) in used_ids:
+                _letter += 1
+            _id = "{}:{}".format(_id, chr(_letter))
+            used_ids.add(_id)
             entry[KEY_ID] = _id
     if return_dupl:
         return entries, duplicates
@@ -184,8 +193,9 @@ def clean_bib_file_main(bib_file, abbr_file=None, remove_fields=None,
     logger.debug("Successfully removed duplicates")
     clean_entries, duplicates = replace_duplicate_ids(bib_database,
                                                       return_dupl=True)
-    logger.info("Replaced %d duplicate ids", len(duplicates))
-    logger.debug("The following duplicates were found: %s", duplicates)
+    if duplicates:
+        logger.warning("Renamed entries with duplicate IDs (the first entry "
+                       "keeps its ID): %s", ", ".join(duplicates))
     if remove_fields is not None:
         logger.info("Removing fields: %s", remove_fields)
         clean_entries = remove_fields_from_database(clean_entries, remove_fields)

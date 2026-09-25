@@ -26,8 +26,21 @@ def test_replace_duplicate_ids():
     entries = bib_database.get_entry_list()
     clean_entries = clean_bib_file.replace_duplicate_ids(entries)
     clean_ids = set([x[KEY_ID] for x in clean_entries])
-    assert clean_ids == {"Author2020:a","Author2020:b","Author2020:c",
-                         "Author2020duplicate", "KEY:a","KEY:b", "RemoveFields"}
+    assert clean_ids == {"Author2020","Author2020:b","Author2020:c",
+                         "Author2020duplicate", "KEY","KEY:b", "RemoveFields"}
+
+def test_replace_duplicate_ids_keeps_first():
+    bib_database = load_bib_file(DIRTY)
+    entries = bib_database.get_entry_list()
+    clean_entries = clean_bib_file.replace_duplicate_ids(entries)
+    assert ([x[KEY_ID] for x in clean_entries if x[KEY_ID].startswith("KEY")]
+            == ["KEY", "KEY:b"])
+    assert clean_entries[0] == entries[0]
+
+def test_replace_duplicate_ids_avoids_existing_ids():
+    entries = [{KEY_ID: "A"}, {KEY_ID: "A"}, {KEY_ID: "A:b"}, {KEY_ID: "A"}]
+    clean_entries = clean_bib_file.replace_duplicate_ids(entries)
+    assert [x[KEY_ID] for x in clean_entries] == ["A", "A:c", "A:b", "A:d"]
 
 def test_replace_duplicate_ids_return():
     bib_database = load_bib_file(DIRTY)
