@@ -1,6 +1,8 @@
+import pytest
+
 from bibtextools import clean_bib_file
 from bibtextools.util import load_bib_file
-from bibtextools.const import KEY_ID
+from bibtextools.const import KEY_ID, KEY_ENTRYTYPE
 
 DIRTY = "duplicates.bib"
 UNICODE = "unicode.bib"
@@ -78,6 +80,45 @@ def test_get_duplicate_entries_number():
     bib_database = clean_bib_file.load_bib_file(DUPLICATE_CONTENT)
     results = clean_bib_file.get_duplicate_entries(bib_database)
     assert len(results) == 2
+
+def _entry(**fields):
+    entry = {KEY_ID: "ID", KEY_ENTRYTYPE: "article",
+             "title": "Secure Coding for Fading Wiretap Channels",
+             "author": "Lind, Anna and Berg, Bo",
+             "journal": "IEEE Transactions on Information Theory",
+             "year": "2020"}
+    entry.update(fields)
+    return {k: v for k, v in entry.items() if v is not None}
+
+@pytest.mark.parametrize("fields1,fields2,is_duplicate", [
+    # different works with similar titles and the same authors
+    ({"doi": "10.1109/TIT.2020.1"},
+     {"doi": "10.1109/TIT.2021.2",
+      "title": "Correction to ``Secure Coding for Fading Wiretap Channels''"},
+     False),
+    ({"eprint": "2304.02538"}, {"eprint": "arXiv:2305.11111v2"}, False),
+    ({KEY_ENTRYTYPE: "book", "isbn": "978-3-16-148410-0"},
+     {KEY_ENTRYTYPE: "book", "isbn": "978-3-16-148411-7"}, False),
+    ({KEY_ENTRYTYPE: "book", "edition": "1"},
+     {KEY_ENTRYTYPE: "book", "edition": "2", "year": "2024"}, False),
+    ({KEY_ENTRYTYPE: "online", "year": None, "date": "2022-01-10"},
+     {KEY_ENTRYTYPE: "online", "year": None, "date": "2024-03-01"}, False),
+    # missing fields must not crash
+    ({"title": None}, {}, False),
+    ({"author": None}, {}, False),
+    # real duplicates
+    ({"doi": "10.1109/TIT.2020.1"},
+     {"doi": "https://doi.org/10.1109/tit.2020.1"}, True),
+    ({"eprint": "arXiv:2304.02538v1"}, {"eprint": "2304.02538v2"}, True),
+    ({KEY_ENTRYTYPE: "misc"}, {KEY_ENTRYTYPE: "misc", "note": "Preprint"},
+     True),
+    ({KEY_ENTRYTYPE: "book", "author": None, "editor": "Lind, Anna"},
+     {KEY_ENTRYTYPE: "book", "author": None, "editor": "Lind, Anna"}, True),
+    ])
+def test_get_duplicate_entries_pairs(fields1, fields2, is_duplicate):
+    entries = [_entry(**fields1), _entry(**fields2)]
+    results = clean_bib_file.get_duplicate_entries(entries)
+    assert len(results) == int(is_duplicate)
 
 def test_remove_duplicate_entries_number_forced():
     bib_database = clean_bib_file.load_bib_file(DUPLICATE_CONTENT)
