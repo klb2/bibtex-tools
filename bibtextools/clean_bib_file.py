@@ -116,6 +116,7 @@ def remove_duplicate_entries(entries, force=False, verbose=logging.WARN):
         logger.warning("Found %d duplicate pairs", len(duplicates))
     else:
         logger.info("No duplicate citations found.")
+    _skipped = []
     while duplicates:
         #_pair = duplicates[0]
         _pair = duplicates.pop(0)
@@ -129,16 +130,19 @@ def remove_duplicate_entries(entries, force=False, verbose=logging.WARN):
             pprint(_pair[0])
             logger.warning("Entry 2:")
             pprint(_pair[1])
-            _idx_entry_delete = input("Which entry do you want to REMOVE? Type 1 or 2 and hit enter. Simply hitting enter will remove the shorter entry. Type 0 for not deleting any entry.\n")
-            try:
-                _idx_entry_delete = int(_idx_entry_delete)
-                if _idx_entry_delete == 0:
-                    continue
-                entries.remove(_pair[_idx_entry_delete - 1])
-            except ValueError:
+            _answer = input("Which entry do you want to REMOVE? Type 1 or 2 and hit enter. Simply hitting enter will remove the shorter entry. Type 0 for not deleting any entry.\n").strip()
+            while _answer not in ("", "0", "1", "2"):
+                _answer = input("Invalid input. Type 1 or 2 to remove that entry, 0 to keep both, or simply hit enter to remove the shorter entry.\n").strip()
+            if _answer == "0":
+                _skipped.append(_pair)
+                continue
+            elif _answer:
+                entries.remove(_pair[int(_answer) - 1])
+            else:
                 entries.remove(_shorter_entry)
         logger.info("Successfully removed duplicate entry.")
-        duplicates = get_duplicate_entries(entries)
+        duplicates = [_p for _p in get_duplicate_entries(entries)
+                      if _p not in _skipped]
         logger.info("%d duplicate pairs remaining...", len(duplicates))
     return entries
 

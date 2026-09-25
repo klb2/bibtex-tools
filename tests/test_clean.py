@@ -85,3 +85,19 @@ def test_remove_duplicate_entries_interactive_skip(monkeypatch):
     bib_database = clean_bib_file.load_bib_file(DUPLICATE_CONTENT)
     results = clean_bib_file.remove_duplicate_entries(bib_database)
     assert len(results) == len(bib_database.get_entry_list()) == 9
+
+def test_remove_duplicate_entries_interactive_invalid_input(monkeypatch):
+    answers = ["3", "-1", "abc", "", ""]
+    monkeypatch.setattr("builtins.input", lambda _prompt="": answers.pop(0))
+    bib_database = clean_bib_file.load_bib_file(DUPLICATE_CONTENT)
+    results = clean_bib_file.remove_duplicate_entries(bib_database)
+    _entry = next(x for x in results if x[KEY_ID] == "Part2")
+    assert len(results) == 7 and len(_entry) == 11 and not answers
+
+def test_remove_duplicate_entries_interactive_skip_not_asked_again(monkeypatch):
+    answers = ["0", "2"]
+    monkeypatch.setattr("builtins.input", lambda _prompt="": answers.pop(0))
+    bib_database = clean_bib_file.load_bib_file(DUPLICATE_CONTENT)
+    results = clean_bib_file.remove_duplicate_entries(bib_database)
+    _ids = set([x[KEY_ID] for x in bib_database.get_entry_list()])
+    assert set([x[KEY_ID] for x in results]) == _ids - {"Part2dupl"} and not answers
