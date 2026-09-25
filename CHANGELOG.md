@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   without deletig any of the two entries. A skipped pair is not asked about
   again.
 - Add `KEY_DATE`, `KEY_DOI`, and `KEY_ISBN` keywords to constants
+- Add new `filter-cited` command that keeps only the entries of a bib file
+  that are cited in a `.bbl` file (biblatex/biber or BibTeX). Entries that
+  cited entries refer to, e.g., via `crossref` or `xdata`, are kept as well.
 
 ### Changed
 - When renaming duplicate IDs in `clean` and `combine`, the first entry keeps
