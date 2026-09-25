@@ -7,7 +7,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 ### Added
 - In the removal of duplicate entries, typing `0` will continue the process
-  without deletig any of the two entries.
+  without deletig any of the two entries. A skipped pair is not asked about
+  again.
+- Add `KEY_DATE`, `KEY_DOI`, and `KEY_ISBN` keywords to constants
+
+### Changed
+- When renaming duplicate IDs in `clean` and `combine`, the first entry keeps
+  its ID, e.g., `key` and `key:b` instead of `key:a` and `key:b`. BibTeX and
+  biber use the first entry as well, so citations of `key` keep working. New
+  IDs no longer collide with existing ones, and the renamed IDs are shown as a
+  warning.
+
+### Fixed
+- Invalid input in the interactive prompt for removing duplicate entries (in
+  all commands), e.g., `3`, no longer crashes the program. The prompt is
+  repeated instead.
+- Entries containing `%` comments, e.g., a commented out field, are no longer
+  silently dropped when loading a bib file. Entries that still cannot be read,
+  e.g., due to a missing comma, are listed in a warning.
+- The removal of duplicate entries no longer treats different works as
+  duplicates: entries with different DOIs, arXiv IDs, or ISBNs, and entries
+  other than articles and conference papers from different years, e.g., two
+  editions of a book, are kept. With `--force`, the removed entries are listed
+  in a warning.
+- The removal of duplicate entries no longer crashes on entries without a
+  title or author. The editor is used for entries without an author.
 
 ## [0.5.0] - 2024-10-15
 ### Added

@@ -9,7 +9,9 @@ from pprint import pprint
 from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.customization import string_to_latex, convert_to_unicode
 
-from .const import KEY_ID, KEY_TITLE, KEY_AUTHOR, KEY_ENTRYTYPE, KEYS_JOURNAL, KEY_BOOKTITLE, KEY_YEAR, KEY_PAGES
+from .const import (KEY_ID, KEY_TITLE, KEY_AUTHOR, KEY_EDITOR, KEY_ENTRYTYPE,
+                    KEYS_JOURNAL, KEY_BOOKTITLE, KEY_YEAR, KEY_DATE, KEY_PAGES,
+                    KEY_DOI, KEY_EPRINT, KEY_ISBN)
 from .util import load_bib_file, write_bib_database, getnames
 
 def repeat(num_times):
@@ -54,16 +56,52 @@ def get_duplicate_ids(entries):
 @cleaning_function(on_all_entries=True)
 def replace_duplicate_ids(entries, return_dupl=False):
     duplicates = {k: 0 for k in get_duplicate_ids(entries)}
+    used_ids = set([x[KEY_ID] for x in entries])
     for entry in entries:
         _id = entry[KEY_ID]
         if _id in duplicates:
             duplicates[_id] += 1
-            _id = "{}:{}".format(_id, chr(ord('`')+duplicates[_id]))
+            # The first entry keeps its ID, since BibTeX and biber also use
+            # the first entry for a duplicate ID.
+            if duplicates[_id] == 1:
+                continue
+            _letter = ord('`') + duplicates[_id]
+            while "{}:{}".format(_id, chr(_letter)) in used_ids:
+                _letter += 1
+            _id = "{}:{}".format(_id, chr(_letter))
+            used_ids.add(_id)
             entry[KEY_ID] = _id
     if return_dupl:
         return entries, duplicates
     else:
         return entries
+
+def _normalize_doi(doi):
+    doi = doi.strip().lower().replace("\\", "")
+    return re.sub(r'^(https?://(dx\.)?doi\.org/|doi:)', '', doi)
+
+def _normalize_eprint(eprint):
+    eprint = re.sub(r'^arxiv:', '', eprint.strip().lower())
+    return re.sub(r'v\d+$', '', eprint)
+
+def _normalize_isbn(isbn):
+    return re.sub(r'[^0-9x]', '', isbn.lower())
+
+IDENTIFIERS = {KEY_DOI: _normalize_doi,
+               KEY_EPRINT: _normalize_eprint,
+               KEY_ISBN: _normalize_isbn}
+
+def _have_different_identifiers(entry1, entry2):
+    """Entries with different DOIs, arXiv IDs, or ISBNs are different works,
+    no matter how similar their titles and authors are."""
+    for _key, _normalize in IDENTIFIERS.items():
+        if _key in entry1 and _key in entry2:
+            if _normalize(entry1[_key]) != _normalize(entry2[_key]):
+                return True
+    return False
+
+def _get_year(entry):
+    return entry.get(KEY_YEAR, entry.get(KEY_DATE, "")[:4])
 
 @cleaning_function(on_all_entries=True)
 def get_duplicate_entries(entries):
@@ -73,6 +111,13 @@ def get_duplicate_entries(entries):
     for _entry1, _entry2 in itertools.combinations(entries, 2):
         if _entry1[KEY_ENTRYTYPE] != _entry2[KEY_ENTRYTYPE]:
             continue
+        _names1 = _entry1.get(KEY_AUTHOR, _entry1.get(KEY_EDITOR))
+        _names2 = _entry2.get(KEY_AUTHOR, _entry2.get(KEY_EDITOR))
+        if not (_entry1.get(KEY_TITLE) and _entry2.get(KEY_TITLE)
+                and _names1 and _names2):
+            continue
+        if _have_different_identifiers(_entry1, _entry2):
+            continue
         seq_matcher_title.set_seqs(_entry2[KEY_TITLE], _entry1[KEY_TITLE])
         _title_ratio = seq_matcher_title.ratio()
         if _title_ratio < .8:
@@ -80,9 +125,9 @@ def get_duplicate_entries(entries):
         #print('---')
         #print(f"T1: {_entry1[KEY_TITLE]}\nT2: {_entry2[KEY_TITLE]}")
         #print(f"Ratio: {_title_ratio}")
-        _authors1 = getnames([i.strip() for i in _entry1[KEY_AUTHOR].replace('\n', ' ').split(" and ")])
+        _authors1 = getnames([i.strip() for i in _names1.replace('\n', ' ').split(" and ")])
         _authors1 = " and ".join(_authors1)
-        _authors2 = getnames([i.strip() for i in _entry2[KEY_AUTHOR].replace('\n', ' ').split(" and ")])
+        _authors2 = getnames([i.strip() for i in _names2.replace('\n', ' ').split(" and ")])
         _authors2 = " and ".join(_authors2)
         seq_matcher_authors.set_seqs(_authors2, _authors1)
         _author_ratio = seq_matcher_authors.ratio()
@@ -90,7 +135,7 @@ def get_duplicate_entries(entries):
             continue
         _same_misc = True
         if _entry1[KEY_ENTRYTYPE] == "inproceedings":
-            _same_misc = _same_misc and (_entry1.get(KEY_YEAR, "") == _entry2.get(KEY_YEAR, ""))
+            _same_misc = _same_misc and (_get_year(_entry1) == _get_year(_entry2))
             _same_misc = _same_misc and (SequenceMatcher(None, _entry1.get(KEY_BOOKTITLE, ""), _entry2.get(KEY_BOOKTITLE, "")).ratio() > .7)
         elif _entry1[KEY_ENTRYTYPE] == "article":
             for _key in KEYS_JOURNAL:
@@ -102,6 +147,9 @@ def get_duplicate_entries(entries):
             _same_misc = SequenceMatcher(None, _journal1, _journal2).ratio() > .7
             if KEY_PAGES in _entry1 and KEY_PAGES in _entry2:
                 _same_misc = _same_misc and (SequenceMatcher(None, _entry1[KEY_PAGES], _entry2[KEY_PAGES]).ratio() >= .75)
+        else:
+            # e.g., two editions of a book or two versions of a software
+            _same_misc = _get_year(_entry1) == _get_year(_entry2)
         if not _same_misc:
             continue
         duplicates.append((_entry1, _entry2))
@@ -116,12 +164,14 @@ def remove_duplicate_entries(entries, force=False, verbose=logging.WARN):
         logger.warning("Found %d duplicate pairs", len(duplicates))
     else:
         logger.info("No duplicate citations found.")
+    _skipped = []
     while duplicates:
         #_pair = duplicates[0]
         _pair = duplicates.pop(0)
-        _shorter_entry = sorted(_pair, key=len)[0]
+        _shorter_entry, _longer_entry = sorted(_pair, key=len)
         if force:
-            logger.info("Due to --force argument, deleting the entry with less fields (without asking)...")
+            logger.warning("Due to --force argument, removing duplicate entry %s (keeping %s) without asking",
+                           _shorter_entry[KEY_ID], _longer_entry[KEY_ID])
             entries.remove(_shorter_entry)
         else:
             logger.warning("Pair of duplicate entries:")
@@ -129,16 +179,19 @@ def remove_duplicate_entries(entries, force=False, verbose=logging.WARN):
             pprint(_pair[0])
             logger.warning("Entry 2:")
             pprint(_pair[1])
-            _idx_entry_delete = input("Which entry do you want to REMOVE? Type 1 or 2 and hit enter. Simply hitting enter will remove the shorter entry. Type 0 for not deleting any entry.\n")
-            if int(_idx_entry_delete) == 0:
+            _answer = input("Which entry do you want to REMOVE? Type 1 or 2 and hit enter. Simply hitting enter will remove the shorter entry. Type 0 for not deleting any entry.\n").strip()
+            while _answer not in ("", "0", "1", "2"):
+                _answer = input("Invalid input. Type 1 or 2 to remove that entry, 0 to keep both, or simply hit enter to remove the shorter entry.\n").strip()
+            if _answer == "0":
+                _skipped.append(_pair)
                 continue
-            try:
-                _idx_entry_delete = int(_idx_entry_delete) - 1
-                entries.remove(_pair[_idx_entry_delete])
-            except ValueError:
+            elif _answer:
+                entries.remove(_pair[int(_answer) - 1])
+            else:
                 entries.remove(_shorter_entry)
         logger.info("Successfully removed duplicate entry.")
-        duplicates = get_duplicate_entries(entries)
+        duplicates = [_p for _p in get_duplicate_entries(entries)
+                      if _p not in _skipped]
         logger.info("%d duplicate pairs remaining...", len(duplicates))
     return entries
 
@@ -180,8 +233,9 @@ def clean_bib_file_main(bib_file, abbr_file=None, remove_fields=None,
     logger.debug("Successfully removed duplicates")
     clean_entries, duplicates = replace_duplicate_ids(bib_database,
                                                       return_dupl=True)
-    logger.info("Replaced %d duplicate ids", len(duplicates))
-    logger.debug("The following duplicates were found: %s", duplicates)
+    if duplicates:
+        logger.warning("Renamed entries with duplicate IDs (the first entry "
+                       "keeps its ID): %s", ", ".join(duplicates))
     if remove_fields is not None:
         logger.info("Removing fields: %s", remove_fields)
         clean_entries = remove_fields_from_database(clean_entries, remove_fields)
