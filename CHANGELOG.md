@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Invalid input in the interactive prompt for removing duplicate entries (in
   all commands), e.g., `3`, no longer crashes the program. The prompt is
   repeated instead.
+- Entries containing `%` comments, e.g., a commented out field, are no longer
+  silently dropped when loading a bib file. Entries that still cannot be read,
+  e.g., due to a missing comma, are listed in a warning.
 
 ## [0.5.0] - 2024-10-15
 ### Added
