@@ -6,6 +6,7 @@ import click
 from . import __version__
 from .clean_bib_file import clean_bib_file_main
 from .combine_bib_files import combine_bib_files_main
+from .filter_bib_file import filter_cited_main
 from .modernize_bib_file import modernize_bib_main
 from .util import write_bib_database
 
@@ -86,6 +87,17 @@ def combine(ctx, bib_file, allow_duplicates, replace_ids, force):
                                               force=force,
                                               verbose=ctx.parent.params['verbose'])
     return combined_entries, bib_file
+
+@main.command("filter-cited")
+@click.pass_context
+@click.argument("bib_file", required=True, type=click.Path(exists=True))
+@click.option("--bbl", "bbl_file", required=True,
+              type=click.Path(exists=True, dir_okay=False))
+def filter_cited(ctx, bib_file, bbl_file):
+    kept_entries = filter_cited_main(bib_file=bib_file,
+                                     bbl_file=bbl_file,
+                                     verbose=ctx.parent.params['verbose'])
+    return kept_entries, bib_file
 
 @main.result_callback()
 @click.pass_context

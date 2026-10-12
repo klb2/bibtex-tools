@@ -95,6 +95,7 @@ Pipfile.lock
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
+!tests/*.bbl
 *.bcf
 *.blg
 *-blx.aux

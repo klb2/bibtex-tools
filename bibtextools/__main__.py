@@ -5,6 +5,7 @@ import logging
 from .modernize_bib_file import modernize_bib_main
 from .clean_bib_file import clean_bib_file_main
 from .combine_bib_files import combine_bib_files_main
+from .filter_bib_file import filter_cited_main
 from .util import write_bib_database
 
 DEFAULT_REMOVE = ["abstract", "annote",
@@ -60,6 +61,14 @@ def get_arg_parser():
     parser_combine.add_argument("--force", action="store_true", help="Force the automatic removal of duplicate entries with the same citation (the shorter one will be removed) and skip the interactive prompt.")
     parser_combine.add_argument("-o", "--output", help="Output file for the new bib entries. If not specified, it will be the input file with a 'clean-' prefix.")
     parser_combine.add_argument("bib_files", nargs="+")
+
+    parser_filter = subparsers.add_parser("filter-cited",
+            help="Filter a bib file to keep only entries that are cited in a given .bbl file.")
+    parser_filter.add_argument("--bbl", dest="bbl_file", required=True,
+                               help="Path to the .bbl file whose citations define which entries to keep.")
+    parser_filter.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level. -v is info and -vv is debug")
+    parser_filter.add_argument("-o", "--output", help="Output file for the filtered bib entries. If not specified, it will be the input file with a 'filter-cited-' prefix.")
+    parser_filter.add_argument("bib_file")
     return parser
 
 
@@ -81,6 +90,8 @@ def main():
         clean_entries = clean_bib_file_main(**args)
     elif command == "combine":
         clean_entries = combine_bib_files_main(**args)
+    elif command == "filter-cited":
+        clean_entries = filter_cited_main(**args)
     if output is None:
         if command == "combine":
             _bib_file_name = args['bib_files'][0]

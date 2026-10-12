@@ -13,6 +13,7 @@ from bibtextools.cli import main
 BIB_MAIN = "old.bib"
 SECOND_BIB = "unicode.bib"
 CLEAN_BIB_MAIN = "clean-old.bib"
+BBL_FILE = "cited.bbl"
 
 def test_main_modern(tmpdir, bib_file=BIB_MAIN):
     out_file = os.path.join(tmpdir, CLEAN_BIB_MAIN)
@@ -31,3 +32,14 @@ def test_main_combine(tmpdir, bib_file=[BIB_MAIN, SECOND_BIB]):
         parser = BibTexParser(homogenize_fields=True, common_strings=True)
         bib_database = bibtexparser.load(_bib_file, parser=parser)
     assert len(bib_database.get_entry_list()) == 8
+
+def test_main_filter_cited(tmpdir, bib_file=BIB_MAIN, bbl_file=BBL_FILE):
+    out_file = os.path.join(tmpdir, "filter-cited-old.bib")
+    runner = CliRunner()
+    result = runner.invoke(main, f'-o "{out_file}" filter-cited {bib_file} --bbl {bbl_file}')
+    with open(out_file, encoding="utf-8") as _bib_file:
+        parser = BibTexParser(homogenize_fields=True, common_strings=True)
+        bib_database = bibtexparser.load(_bib_file, parser=parser)
+    entries = bib_database.get_entry_list()
+    kept_ids = {entry["ID"] for entry in entries}
+    assert kept_ids == {"Key123", "Conference2015"} and result.exit_code == 0

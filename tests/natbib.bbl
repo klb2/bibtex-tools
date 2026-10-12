@@ -1,0 +1,21 @@
+\begin{thebibliography}{4}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[{Author and Name(2010)}]{Name2010}
+First Author and Last Name.
+\newblock Title.
+\newblock \emph{Journal Title}, 2010.
+
+\bibitem[{Jorswieck, Besser, and others with a very long list of
+  authors(2020)}]{Jorswieck2020}
+Eduard~A. Jorswieck and Karl-Ludwig Besser.
+\newblock Copula-based bounds.
+
+\bibitem[DSR{\etalchar{+}}18]{Duck2018}
+Donald Duck and others.
+\newblock ECG.
+
+\bibitem{Report2005}
+Some Report, 2005.
+
+\end{thebibliography}

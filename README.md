@@ -16,6 +16,7 @@ Right now, the following functions are available
 * [**Modernizing bib files:**](#modernizing-bib-files) `modernize`
 * [**Cleaning bib files:**](#cleaning-bib-files) `clean`
 * [**Combining bib files:**](#combining-bib-files) `combine`
+* [**Filtering cited entries:**](#filtering-cited-entries) `filter-cited`
 
 
 Use `bibtex-tools --help` to list the possible commands and `bibtex-tools
@@ -61,6 +62,21 @@ If you want to combine the files `1.bib`, `2.bib`, and `3.bib` into a single
 file called `literature.bib`, you can use the following command
 ```bash
 bibtex-tools combine -o literature.bib 1.bib 2.bib 3.bib
+```
+
+
+### Filtering Cited Entries
+The command `bibtex-tools filter-cited` keeps only the entries of a bib-file
+that are cited in a document, e.g., to submit a minimal bib-file with a paper.
+The cited keys are read from the `.bbl` file that biber (biblatex) or BibTeX
+creates when compiling the document.  Entries that a cited entry refers to,
+e.g., via `crossref`, `xdata`, or `related`, are kept as well.
+
+#### Example
+If you want to keep only the entries of `literature.bib` that are cited in the
+document `paper.tex`, compile the document and use the following command
+```bash
+bibtex-tools filter-cited --bbl paper.bbl -o paper.bib literature.bib
 ```
 
 

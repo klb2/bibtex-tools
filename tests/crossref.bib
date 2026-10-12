@@ -1,0 +1,44 @@
+@xdata{PublisherInfo,
+  publisher = {Test Publisher},
+  location = {Test City},
+}
+
+@proceedings{Proc2022,
+  editor = {Editor, Ed},
+  title = {Proceedings of the Test Conference},
+  year = {2022},
+  xdata = {PublisherInfo},
+}
+
+@inproceedings{Child2022,
+  author = {Lee, Bo},
+  title = {Child Paper},
+  crossref = {Proc2022},
+}
+
+@inproceedings{Sibling2022,
+  author = {Kim, Alice},
+  title = {Uncited Paper in the Same Proceedings},
+  crossref = {Proc2022},
+}
+
+@article{Main2023,
+  author = {Lee, Bo},
+  title = {Main Paper},
+  journal = {Journal Name},
+  year = {2023},
+  related = {Data2023, Missing2023},
+}
+
+@dataset{Data2023,
+  author = {Lee, Bo},
+  title = {Data Set of the Main Paper},
+  year = {2023},
+}
+
+@article{Uncited2020,
+  author = {Author, First},
+  title = {Uncited Paper},
+  journal = {Journal Name},
+  year = {2020},
+}

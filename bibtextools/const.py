@@ -11,3 +11,7 @@ KEY_ENTRYTYPE = "ENTRYTYPE"
 KEYS_JOURNAL = ["journal", "journaltitle"]
 KEY_BOOKTITLE = "booktitle"
 KEY_EDITOR = "editor"
+KEY_DATE = "date"
+KEY_DOI = "doi"
+KEY_ISBN = "isbn"
+KEYS_REFERENCE = ["crossref", "xref", "xdata", "related", "entryset"]
